@@ -1,6 +1,7 @@
 /*
- * VIRAL MOCHI BOT - Wemos D1 Mini Edition
- * Features: OLED Display, Touch Sensor Control, Multiple Animations
+ * CUTE FACE MOCHI BOT - Full Screen Anime Face
+ * Features: Big anime eyes, full-screen face, touch-controlled animations
+ * Style: Like ekik/mochi bots with expressive cute faces
  * 
  * Pinout:
  * OLED SDA -> D2 (GPIO4)
@@ -27,17 +28,16 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Animation States
 enum AnimationState {
-  HAPPY_BOUNCE,
-  CUTE_SPIN,
-  WINK_BLINK,
-  HEART_LOVE,
-  DIZZY_SPIN,
-  SLEEP_MODE,
-  DANCE_PARTY
+  HAPPY,
+  BLINKING,
+  LOVE_EYES,
+  SHOCKED,
+  SLEEPY,
+  EXCITED,
+  SHY
 };
 
-AnimationState currentAnimation = HAPPY_BOUNCE;
-unsigned long lastTapTime = 0;
+AnimationState currentAnimation = HAPPY;
 unsigned long animationStartTime = 0;
 bool lastTouchState = false;
 
@@ -45,7 +45,7 @@ void setup() {
   Serial.begin(115200);
   delay(100);
   
-  Serial.println("\n\nMOCHI BOT Starting...");
+  Serial.println("\n\nCUTE FACE BOT Starting...");
   
   // Initialize I2C with custom pins
   Wire.begin(SDA_PIN, SCL_PIN);
@@ -59,15 +59,13 @@ void setup() {
   // Setup touch sensor
   pinMode(TOUCH_PIN, INPUT);
   
+  // Boot screen
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(20, 25);
-  display.println("MOCHI BOT");
-  display.setCursor(15, 40);
-  display.println("Booting up...");
+  display.setCursor(15, 25);
+  display.println("CUTE BOT");
   display.display();
-  
   delay(1500);
   
   animationStartTime = millis();
@@ -90,26 +88,26 @@ void loop() {
   display.clearDisplay();
   
   switch (currentAnimation) {
-    case HAPPY_BOUNCE:
-      drawHappyBounce();
+    case HAPPY:
+      drawHappyFace();
       break;
-    case CUTE_SPIN:
-      drawCuteSpin();
+    case BLINKING:
+      drawBlinkingFace();
       break;
-    case WINK_BLINK:
-      drawWinkBlink();
+    case LOVE_EYES:
+      drawLoveEyesFace();
       break;
-    case HEART_LOVE:
-      drawHeartLove();
+    case SHOCKED:
+      drawShockedFace();
       break;
-    case DIZZY_SPIN:
-      drawDizzySpin();
+    case SLEEPY:
+      drawSleepyFace();
       break;
-    case SLEEP_MODE:
-      drawSleepMode();
+    case EXCITED:
+      drawExcitedFace();
       break;
-    case DANCE_PARTY:
-      drawDanceParty();
+    case SHY:
+      drawShyFace();
       break;
   }
   
@@ -118,244 +116,277 @@ void loop() {
 }
 
 void handleTap() {
-  lastTapTime = millis();
-  
   // Cycle through animations
   currentAnimation = (AnimationState)((currentAnimation + 1) % 7);
   animationStartTime = millis();
   
-  Serial.print("Animation changed to: ");
+  Serial.print("Face changed to: ");
   Serial.println(currentAnimation);
 }
 
-// ================== ANIMATION FUNCTIONS ==================
+// ================== FACE DRAWING FUNCTIONS ==================
 
-void drawHappyBounce() {
+void drawHappyFace() {
   unsigned long elapsed = millis() - animationStartTime;
-  float bounce = sin((elapsed / 500.0) * PI) * 8;
   
-  int mochY = 32 - bounce;
+  // Draw face outline (circle/rounded shape)
+  drawFaceOutline();
   
-  // Draw bouncing mochi
-  display.fillCircle(64, mochY, 16, SSD1306_WHITE);
+  // Draw big happy eyes
+  drawBigEye(35, 22, 0);  // Left eye
+  drawBigEye(93, 22, 0);  // Right eye
   
-  // Happy eyes
-  display.fillCircle(60, mochY - 4, 2, SSD1306_BLACK);
-  display.fillCircle(68, mochY - 4, 2, SSD1306_BLACK);
+  // Draw happy mouth
+  display.drawLine(40, 45, 88, 45, SSD1306_WHITE);  // Mouth line
+  display.drawLine(40, 46, 88, 46, SSD1306_WHITE);
+  display.drawLine(40, 47, 88, 47, SSD1306_WHITE);
   
-  // Happy mouth
-  display.drawLine(60, mochY + 5, 68, mochY + 5, SSD1306_BLACK);
-  display.drawLine(60, mochY + 6, 68, mochY + 6, SSD1306_BLACK);
+  // Happy smile arc
+  for (int i = 0; i < 12; i++) {
+    float angle = (i / 12.0) * PI;
+    int x = 40 + i * 4;
+    int y = 48 + sin(angle) * 3;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
   
-  // Ground line
-  display.drawLine(30, 50, 98, 50, SSD1306_WHITE);
-  
-  // Label
-  display.setTextSize(1);
-  display.setCursor(45, 55);
-  display.println("BOUNCY!");
+  // Blush marks
+  drawBlush(25, 38);
+  drawBlush(103, 38);
 }
 
-void drawCuteSpin() {
+void drawBlinkingFace() {
   unsigned long elapsed = millis() - animationStartTime;
-  float rotation = (elapsed / 20.0);
+  int phase = (elapsed / 400) % 5;  // Blink cycle
   
+  drawFaceOutline();
+  
+  // Left eye - normal
+  drawBigEye(35, 22, 0);
+  
+  // Right eye - blinking
+  if (phase == 0 || phase == 1) {
+    drawBigEye(93, 22, 0);  // Open
+  } else if (phase == 2) {
+    drawClosedEye(93, 22);  // Closed
+  } else {
+    drawBigEye(93, 22, 0);  // Open again
+  }
+  
+  // Gentle smile
+  display.drawLine(45, 46, 83, 46, SSD1306_WHITE);
+  display.drawLine(45, 47, 83, 47, SSD1306_WHITE);
+  
+  for (int i = 0; i < 10; i++) {
+    float angle = (i / 10.0) * PI;
+    int x = 45 + i * 3.8;
+    int y = 48 + sin(angle) * 2;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+}
+
+void drawLoveEyesFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float pulse = sin((elapsed / 500.0) * PI);
+  
+  drawFaceOutline();
+  
+  // Love eyes (heart shapes)
+  drawHeartEye(35, 22, pulse);  // Left eye
+  drawHeartEye(93, 22, pulse);  // Right eye
+  
+  // Love mouth (kiss shape)
+  display.drawCircle(64, 47, 3, SSD1306_WHITE);
+  display.drawCircle(64, 47, 2, SSD1306_WHITE);
+  
+  // Floating hearts around face
+  drawTinyHeartAt(15, 10);
+  drawTinyHeartAt(113, 10);
+  drawTinyHeartAt(15, 50);
+  drawTinyHeartAt(113, 50);
+}
+
+void drawShockedFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  
+  drawFaceOutline();
+  
+  // Big shocked eyes (wide open circles)
+  display.drawCircle(35, 22, 8, SSD1306_WHITE);
+  display.drawCircle(35, 22, 7, SSD1306_WHITE);
+  display.fillCircle(35, 22, 3, SSD1306_WHITE);  // Pupil
+  
+  display.drawCircle(93, 22, 8, SSD1306_WHITE);
+  display.drawCircle(93, 22, 7, SSD1306_WHITE);
+  display.fillCircle(93, 22, 3, SSD1306_WHITE);  // Pupil
+  
+  // O shaped mouth
+  display.drawCircle(64, 48, 4, SSD1306_WHITE);
+  display.drawCircle(64, 48, 3, SSD1306_WHITE);
+}
+
+void drawSleepyFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float yBob = sin((elapsed / 1200.0) * PI) * 3;
+  
+  // Draw sleepy face outline
+  drawFaceOutlineOffset(yBob);
+  
+  // Closed sleeping eyes (curved lines)
+  display.drawLine(28, 22, 42, 20, SSD1306_WHITE);
+  display.drawLine(28, 23, 42, 21, SSD1306_WHITE);
+  
+  display.drawLine(86, 20, 100, 22, SSD1306_WHITE);
+  display.drawLine(86, 21, 100, 23, SSD1306_WHITE);
+  
+  // Peaceful smile
+  display.drawLine(45, 47, 83, 47, SSD1306_WHITE);
+  
+  // ZZZ floating
+  drawZZZ(110, 15 - yBob);
+  drawZZZ(115, 10 - yBob);
+  drawZZZ(110, 5 - yBob);
+}
+
+void drawExcitedFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float bounce = sin((elapsed / 300.0) * PI) * 4;
+  
+  // Draw face outline with slight bounce
+  drawFaceOutlineOffset(bounce);
+  
+  // Excited wide eyes
+  drawBigEyeWide(35, 22);
+  drawBigEyeWide(93, 22);
+  
+  // Big excited smile
+  for (int i = 0; i < 15; i++) {
+    float angle = (i / 15.0) * PI;
+    int x = 38 + i * 2.6;
+    int y = 48 + sin(angle) * 5;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+  display.drawLine(40, 48, 88, 48, SSD1306_WHITE);
+  display.drawLine(40, 49, 88, 49, SSD1306_WHITE);
+  
+  // Happy blush
+  drawBlush(22, 38);
+  drawBlush(106, 38);
+}
+
+void drawShyFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  
+  drawFaceOutline();
+  
+  // Shy closed eyes (looking down)
+  display.drawLine(30, 20, 40, 24, SSD1306_WHITE);
+  display.drawLine(30, 21, 40, 25, SSD1306_WHITE);
+  
+  display.drawLine(88, 24, 98, 20, SSD1306_WHITE);
+  display.drawLine(88, 25, 98, 21, SSD1306_WHITE);
+  
+  // Bashful smile (smaller)
+  display.drawLine(50, 46, 78, 46, SSD1306_WHITE);
+  
+  for (int i = 0; i < 8; i++) {
+    float angle = (i / 8.0) * PI;
+    int x = 50 + i * 3.5;
+    int y = 47 + sin(angle) * 2;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+  
+  // Big shy blush
+  for (int i = 0; i < 6; i++) {
+    display.drawCircle(22, 36 + i/2, 4 - i/2, SSD1306_WHITE);
+  }
+  for (int i = 0; i < 6; i++) {
+    display.drawCircle(106, 36 + i/2, 4 - i/2, SSD1306_WHITE);
+  }
+}
+
+// ================== DRAWING HELPER FUNCTIONS ==================
+
+void drawFaceOutline() {
+  drawFaceOutlineOffset(0);
+}
+
+void drawFaceOutlineOffset(float yOffset) {
   int centerX = 64;
-  int centerY = 32;
-  int radius = 12;
+  int centerY = 32 + yOffset;
+  int radius = 28;
   
-  // Draw rotating mochi
-  display.fillCircle(centerX, centerY, 14, SSD1306_WHITE);
+  // Draw face circle
+  display.drawCircle(centerX, centerY, radius, SSD1306_WHITE);
   
-  // Eyes that follow rotation
-  float eyeAngle = rotation * PI / 180.0;
-  int eye1X = centerX + cos(eyeAngle) * 6;
-  int eye1Y = centerY + sin(eyeAngle) * 6 - 2;
-  
-  display.fillCircle(eye1X, eye1Y, 2, SSD1306_BLACK);
-  
-  float eyeAngle2 = eyeAngle + PI;
-  int eye2X = centerX + cos(eyeAngle2) * 6;
-  int eye2Y = centerY + sin(eyeAngle2) * 6 - 2;
-  display.fillCircle(eye2X, eye2Y, 2, SSD1306_BLACK);
-  
-  // Spinning indicator
-  int dotX = centerX + cos(eyeAngle * 2) * 18;
-  int dotY = centerY + sin(eyeAngle * 2) * 18;
-  display.fillCircle(dotX, dotY, 1, SSD1306_WHITE);
-  
-  display.setTextSize(1);
-  display.setCursor(48, 55);
-  display.println("SPIN SPIN!");
-}
-
-void drawWinkBlink() {
-  unsigned long elapsed = millis() - animationStartTime;
-  int phase = (elapsed / 300) % 4;
-  
-  int mochX = 64;
-  int mochY = 32;
-  
-  // Draw mochi
-  display.fillCircle(mochX, mochY, 14, SSD1306_WHITE);
-  
-  // Left eye
-  if (phase < 2) {
-    display.fillCircle(60, mochY - 4, 2, SSD1306_BLACK);
-  } else {
-    display.drawLine(59, mochY - 4, 61, mochY - 4, SSD1306_BLACK);
+  // Draw thicker outline
+  for (int i = 1; i <= 2; i++) {
+    display.drawCircle(centerX, centerY, radius - i, SSD1306_WHITE);
   }
-  
-  // Right eye (winking)
-  if (phase == 1 || phase == 3) {
-    display.drawLine(67, mochY - 4, 69, mochY - 4, SSD1306_BLACK);
-  } else {
-    display.fillCircle(68, mochY - 4, 2, SSD1306_BLACK);
-  }
-  
-  // Smile
-  display.drawLine(60, mochY + 4, 68, mochY + 4, SSD1306_BLACK);
-  
-  // Blush
-  display.drawCircle(55, mochY + 2, 1, SSD1306_BLACK);
-  display.drawCircle(73, mochY + 2, 1, SSD1306_BLACK);
-  
-  display.setTextSize(1);
-  display.setCursor(45, 55);
-  display.println("WINK WINK!");
 }
 
-void drawHeartLove() {
-  unsigned long elapsed = millis() - animationStartTime;
-  float scale = 0.8 + sin((elapsed / 400.0) * PI) * 0.3;
+void drawBigEye(int x, int y, int lookDirection) {
+  // Eye white (sclera)
+  display.drawCircle(x, y, 7, SSD1306_WHITE);
+  display.drawCircle(x, y, 6, SSD1306_WHITE);
   
-  int mochX = 64;
-  int mochY = 28;
+  // Iris
+  int irisX = x + (lookDirection * 2);
+  int irisY = y;
+  display.fillCircle(irisX, irisY, 4, SSD1306_WHITE);
   
-  // Draw mochi
-  display.fillCircle(mochX, mochY, 14, SSD1306_WHITE);
+  // Pupil (shiny)
+  display.fillCircle(irisX + 1, irisY - 1, 2, SSD1306_BLACK);
   
-  // Heart eyes
-  drawSmallHeart(58, mochY - 3, scale);
-  drawSmallHeart(70, mochY - 3, scale);
-  
-  // Love mouth
-  display.drawLine(62, mochY + 5, 66, mochY + 5, SSD1306_BLACK);
-  display.drawLine(62, mochY + 6, 66, mochY + 6, SSD1306_BLACK);
-  
-  // Floating hearts
-  for (int i = 0; i < 3; i++) {
-    float hx = 30 + i * 30 + sin((elapsed / 500.0 + i) * PI) * 5;
-    float hy = 15 - (elapsed / 3000.0) * 20 + i * 5;
-    if (hy > 0) {
-      drawTinyHeart(hx, hy);
-    }
-  }
-  
-  display.setTextSize(1);
-  display.setCursor(48, 55);
-  display.println("LOVE ME!");
+  // Eye shine (cute highlight)
+  display.fillCircle(irisX + 2, irisY - 2, 1, SSD1306_WHITE);
 }
 
-void drawDizzySpin() {
-  unsigned long elapsed = millis() - animationStartTime;
-  int rotation = (elapsed / 40) % 360;
+void drawBigEyeWide(int x, int y) {
+  // Wider excited eyes
+  display.drawCircle(x, y, 8, SSD1306_WHITE);
+  display.drawCircle(x, y, 7, SSD1306_WHITE);
   
-  int mochX = 64;
-  int mochY = 32;
+  // Iris
+  display.fillCircle(x, y, 4, SSD1306_WHITE);
   
-  // Draw mochi
-  display.fillCircle(mochX, mochY, 14, SSD1306_WHITE);
+  // Pupil
+  display.fillCircle(x + 1, y - 1, 2, SSD1306_BLACK);
   
-  // Dizzy spiral eyes
-  drawDizzyEye(58, mochY - 2, rotation);
-  drawDizzyEye(70, mochY - 2, rotation + 180);
-  
-  // Dizzy mouth
-  display.drawLine(62, mochY + 6, 66, mochY + 6, SSD1306_BLACK);
-  display.drawLine(61, mochY + 7, 67, mochY + 7, SSD1306_BLACK);
-  
-  display.setTextSize(1);
-  display.setCursor(42, 55);
-  display.println("WHIRRRRR!");
+  // Shine
+  display.fillCircle(x + 2, y - 2, 1, SSD1306_WHITE);
 }
 
-void drawSleepMode() {
-  unsigned long elapsed = millis() - animationStartTime;
-  float yOffset = sin((elapsed / 1000.0) * PI) * 2;
-  
-  int mochX = 64;
-  int mochY = 32 + yOffset;
-  
-  // Draw sleeping mochi
-  display.fillCircle(mochX, mochY, 14, SSD1306_WHITE);
-  
-  // Closed eyes (curved lines)
-  display.drawLine(58, mochY - 3, 62, mochY - 3, SSD1306_BLACK);
-  display.drawLine(66, mochY - 3, 70, mochY - 3, SSD1306_BLACK);
-  
-  // Sleeping smile
-  display.drawLine(60, mochY + 5, 68, mochY + 5, SSD1306_BLACK);
-  
-  // ZZZ
-  display.setTextSize(1);
-  for (int i = 0; i < 3; i++) {
-    int zY = 15 - i * 10;
-    int zX = 85 + (elapsed / 400 - i) * 2;
-    if (zX < 128) {
-      display.drawLine(zX, zY, zX + 4, zY + 4, SSD1306_WHITE);
-    }
-  }
-  
-  display.setTextSize(1);
-  display.setCursor(45, 55);
-  display.println("ZZZ ZZZ");
+void drawClosedEye(int x, int y) {
+  // Closed eye (curved line)
+  display.drawLine(x - 6, y - 2, x + 6, y - 2, SSD1306_WHITE);
+  display.drawLine(x - 6, y - 1, x + 6, y - 1, SSD1306_WHITE);
+  display.drawLine(x - 6, y, x + 6, y, SSD1306_WHITE);
 }
 
-void drawDanceParty() {
-  unsigned long elapsed = millis() - animationStartTime;
-  float moveX = sin((elapsed / 300.0) * PI) * 8;
+void drawHeartEye(int x, int y, float scale) {
+  int size = 5 + (scale * 2);
   
-  int mochX = 64 + moveX;
-  int mochY = 32;
+  // Heart top points
+  display.fillCircle(x - 2, y - 3, 2, SSD1306_WHITE);
+  display.fillCircle(x + 2, y - 3, 2, SSD1306_WHITE);
   
-  // Draw dancing mochi
-  display.fillCircle(mochX, mochY, 14, SSD1306_WHITE);
-  
-  // Dancing eyes
-  display.fillCircle(mochX - 4, mochY - 4, 2, SSD1306_BLACK);
-  display.fillCircle(mochX + 4, mochY - 4, 2, SSD1306_BLACK);
-  
-  // Dancing smile
-  display.drawLine(mochX - 4, mochY + 5, mochX + 4, mochY + 5, SSD1306_BLACK);
-  display.drawLine(mochX - 4, mochY + 6, mochX + 4, mochY + 6, SSD1306_BLACK);
-  
-  // Party confetti
-  for (int i = 0; i < 5; i++) {
-    float confettiX = 20 + i * 25 + sin((elapsed / 200.0 + i) * PI) * 5;
-    float confettiY = 15 + (elapsed / 100.0 + i * 3) % 20;
-    display.fillRect(confettiX, confettiY, 2, 2, SSD1306_WHITE);
-  }
-  
-  display.setTextSize(1);
-  display.setCursor(42, 55);
-  display.println("PARTY TIME!");
+  // Heart bottom point
+  display.drawLine(x - 3, y, x, y + 5, SSD1306_WHITE);
+  display.drawLine(x + 3, y, x, y + 5, SSD1306_WHITE);
+  display.drawLine(x - 3, y + 1, x, y + 4, SSD1306_WHITE);
+  display.drawLine(x + 3, y + 1, x, y + 4, SSD1306_WHITE);
 }
 
-// ================== HELPER DRAWING FUNCTIONS ==================
-
-void drawSmallHeart(int x, int y, float scale) {
-  int s = scale * 2;
-  display.drawPixel(x, y - s, SSD1306_BLACK);
-  display.drawPixel(x - s, y - s + 1, SSD1306_BLACK);
-  display.drawPixel(x + s, y - s + 1, SSD1306_BLACK);
-  display.drawPixel(x - s, y, SSD1306_BLACK);
-  display.drawPixel(x, y, SSD1306_BLACK);
-  display.drawPixel(x + s, y, SSD1306_BLACK);
-  display.drawPixel(x, y + s, SSD1306_BLACK);
+void drawBlush(int x, int y) {
+  // Cute circular blush
+  display.drawCircle(x, y, 3, SSD1306_WHITE);
+  display.drawCircle(x, y, 2, SSD1306_WHITE);
+  display.drawPixel(x, y, SSD1306_WHITE);
+  display.drawPixel(x + 1, y, SSD1306_WHITE);
+  display.drawPixel(x, y + 1, SSD1306_WHITE);
 }
 
-void drawTinyHeart(float x, float y) {
+void drawTinyHeartAt(int x, int y) {
   display.drawPixel(x, y - 1, SSD1306_WHITE);
   display.drawPixel(x - 1, y, SSD1306_WHITE);
   display.drawPixel(x, y, SSD1306_WHITE);
@@ -363,13 +394,10 @@ void drawTinyHeart(float x, float y) {
   display.drawPixel(x, y + 1, SSD1306_WHITE);
 }
 
-void drawDizzyEye(int x, int y, int rotation) {
-  int angle = rotation % 360;
-  
-  for (int i = 0; i < 8; i++) {
-    float lineAngle = (i * 45 + angle) * PI / 180.0;
-    int px = x + cos(lineAngle) * 2;
-    int py = y + sin(lineAngle) * 2;
-    display.drawPixel(px, py, SSD1306_BLACK);
-  }
+void drawZZZ(int x, int y) {
+  // Draw Z shape
+  display.drawLine(x, y, x + 2, y, SSD1306_WHITE);
+  display.drawLine(x, y + 1, x + 2, y + 1, SSD1306_WHITE);
+  display.drawLine(x + 2, y + 1, x, y + 3, SSD1306_WHITE);
+  display.drawLine(x, y + 3, x + 2, y + 3, SSD1306_WHITE);
 }
