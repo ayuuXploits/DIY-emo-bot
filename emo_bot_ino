@@ -1,7 +1,7 @@
 /*
- * CUTE FACE MOCHI BOT - Full Screen Anime Face
+ * CUTE FACE EMO BOT - Full Screen Anime Face
  * Features: Big anime eyes, full-screen face, touch-controlled animations
- * Style: Like ekik/mochi bots with expressive cute faces
+ * Style: Like ekik/emo bots with expressive cute faces
  * 
  * Pinout:
  * OLED SDA -> D2 (GPIO4)
