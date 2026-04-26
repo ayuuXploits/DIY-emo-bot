@@ -40,6 +40,12 @@ enum AnimationState {
 AnimationState currentAnimation = HAPPY;
 unsigned long animationStartTime = 0;
 bool lastTouchState = false;
+unsigned long touchPressStart = 0;
+bool isClockMode = false;
+unsigned long clockStartTime = 0;
+int hours = 12;
+int minutes = 0;
+int seconds = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -79,51 +85,117 @@ void loop() {
   // Check touch sensor
   bool currentTouchState = digitalRead(TOUCH_PIN);
   
-  // Detect touch (transition from HIGH to LOW)
-  if (!currentTouchState && lastTouchState) {
-    handleTap();
+  // Touch pressed (HIGH to LOW transition)
+  if (currentTouchState == LOW && !lastTouchState) {
+    touchPressStart = millis();
+  }
+  
+  // Touch released (LOW to HIGH transition)
+  if (currentTouchState == HIGH && lastTouchState) {
+    unsigned long pressDuration = millis() - touchPressStart;
+    
+    if (pressDuration > 800) {
+      // Long press detected (>800ms)
+      isClockMode = !isClockMode;
+      clockStartTime = millis();
+      if (isClockMode) {
+        Serial.println("Clock Mode ON");
+      } else {
+        Serial.println("Clock Mode OFF");
+        animationStartTime = millis();
+      }
+    } else if (pressDuration > 50) {
+      // Short press detected
+      if (!isClockMode) {
+        currentAnimation = (AnimationState)((currentAnimation + 1) % 7);
+        animationStartTime = millis();
+        Serial.print("Face changed to: ");
+        Serial.println(currentAnimation);
+      }
+    }
   }
   
   lastTouchState = currentTouchState;
   
-  // Clear and draw current animation
+  // Clear and draw current display
   display.clearDisplay();
   
-  switch (currentAnimation) {
-    case HAPPY:
-      drawHappyFace();
-      break;
-    case BLINKING:
-      drawBlinkingFace();
-      break;
-    case LOVE_EYES:
-      drawLoveEyesFace();
-      break;
-    case SHOCKED:
-      drawShockedFace();
-      break;
-    case SLEEPY:
-      drawSleepyFace();
-      break;
-    case EXCITED:
-      drawExcitedFace();
-      break;
-    case SHY:
-      drawShyFace();
-      break;
+  if (isClockMode) {
+    drawClockDisplay();
+  } else {
+    switch (currentAnimation) {
+      case HAPPY:
+        drawHappyFace();
+        break;
+      case BLINKING:
+        drawBlinkingFace();
+        break;
+      case LOVE_EYES:
+        drawLoveEyesFace();
+        break;
+      case SHOCKED:
+        drawShockedFace();
+        break;
+      case SLEEPY:
+        drawSleepyFace();
+        break;
+      case EXCITED:
+        drawExcitedFace();
+        break;
+      case SHY:
+        drawShyFace();
+        break;
+    }
   }
   
   display.display();
   delay(50);
 }
 
-void handleTap() {
-  // Cycle through animations
-  currentAnimation = (AnimationState)((currentAnimation + 1) % 7);
-  animationStartTime = millis();
+// ================== CLOCK DISPLAY FUNCTION ==================
+
+void drawClockDisplay() {
+  unsigned long elapsed = millis() - clockStartTime;
   
-  Serial.print("Face changed to: ");
-  Serial.println(currentAnimation);
+  // Calculate time (starts from 12:00:00)
+  unsigned long totalSeconds = (elapsed / 1000) % 86400;  // Reset every 24 hours
+  int h = (12 + totalSeconds / 3600) % 24;
+  int m = (totalSeconds % 3600) / 60;
+  int s = totalSeconds % 60;
+  
+  // Format display - large numbers
+  display.setTextSize(3);
+  display.setTextColor(SSD1306_WHITE);
+  
+  // Draw HH:MM:SS
+  char timeStr[9];
+  sprintf(timeStr, "%02d:%02d:%02d", h, m, s);
+  
+  // Center the time display
+  display.setCursor(10, 15);
+  display.println(timeStr);
+  
+  // Draw decorative elements
+  display.setTextSize(1);
+  display.setCursor(50, 50);
+  display.println("Long press to exit");
+  
+  // Animated clock icon
+  unsigned long pulse = elapsed % 1000;
+  int pulseSize = 2 + (pulse / 200);
+  
+  display.drawCircle(10, 10, 8, SSD1306_WHITE);
+  display.drawCircle(10, 10, 7, SSD1306_WHITE);
+  
+  // Clock hands
+  display.drawLine(10, 10, 10, 5, SSD1306_WHITE);  // Hour hand
+  display.drawLine(10, 10, 13, 10, SSD1306_WHITE);  // Minute hand
+  display.fillCircle(10, 10, 1, SSD1306_WHITE);  // Center dot
+  
+  // Pulsing indicator
+  for (int i = 0; i < pulseSize; i++) {
+    display.drawCircle(10, 10, 10 + i, SSD1306_WHITE);
+  }
 }
 
 // ================== FACE DRAWING FUNCTIONS ==================
