@@ -224,9 +224,10 @@ Tap 8 → 😊 HAPPY  (loops back)
 
 ```
 anime-cute-face-bot/
-├── emo_bot.ino   ← Main sketch (upload this)
-├── README.md
-└── LICENSE
+├── README.md                          (This file!)
+├── emo_bot_vmax.ino                   (Main code)
+├── LICENSE                            (MIT License)
+├── EMO_bot.zip                       (for 3d printing parts)
 ```
 
 ---
