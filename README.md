@@ -353,7 +353,8 @@ currentAnimation = (AnimationState)((currentAnimation + 1) % 8);
 
 ## 📜 License
 
-MIT — free to use, modify, and share.
+© 2026 ayuuXploits — All Rights Reserved
+
 
 ---
 
