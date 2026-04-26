@@ -339,7 +339,6 @@ case MY_FACE: drawMyFace(); break;
 // 4. Increase modulo from 7 to 8
 currentAnimation = (AnimationState)((currentAnimation + 1) % 8);
 ```
-
 ---
 
 ## 📦 Dependencies
