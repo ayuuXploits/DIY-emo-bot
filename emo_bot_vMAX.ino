@@ -1,0 +1,566 @@
+/*
+ * ANIME CUTE FACE BOT - Full Screen Expressions with WiFi Clock
+ * Features: HUGE anime eyes, real-time clock via WiFi/NTP
+ * Style: Like ekik/mochi bots with expressive eyes
+ * 
+ * Pinout:
+ * OLED SDA -> D2 (GPIO4)
+ * OLED SCL -> D1 (GPIO5)
+ * Touch Sensor SIGNAL -> D5 (GPIO14)
+ */
+
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <ESP8266WiFi.h>
+#include <time.h>
+
+// OLED Display Setup
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET -1
+
+// Pin Definitions
+#define TOUCH_PIN D5    // GPIO14
+#define SDA_PIN D2      // GPIO4
+#define SCL_PIN D1      // GPIO5
+
+// WiFi Credentials - CHANGE THESE!
+const char* ssid = "Airtel_Ayu_9080";           // Replace with your WiFi name
+const char* password = "Sapi@1234";   // Replace with your WiFi password
+
+// NTP Server
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 19800;                    // IST (India) = 5:30 hours = 19800 seconds
+const int daylightOffset_sec = 0;               // Change for daylight saving
+
+// Create display object
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// Animation States
+enum AnimationState {
+  HAPPY,
+  BLINKING,
+  LOVE_EYES,
+  SHOCKED,
+  SLEEPY,
+  EXCITED,
+  SHY
+};
+
+AnimationState currentAnimation = HAPPY;
+unsigned long animationStartTime = 0;
+bool lastTouchState = false;
+unsigned long touchPressStart = 0;
+bool isClockMode = false;
+unsigned long clockStartTime = 0;
+bool wifiConnected = false;
+unsigned long lastWifiCheck = 0;
+
+void setup() {
+  Serial.begin(115200);
+  delay(100);
+  
+  Serial.println("\n\nANIME EYES BOT Starting...");
+  
+  // Initialize I2C with custom pins
+  Wire.begin(SDA_PIN, SCL_PIN);
+  
+  // Initialize OLED
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    while (1);
+  }
+  
+  // Setup touch sensor
+  pinMode(TOUCH_PIN, INPUT);
+  
+  // Boot screen
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(20, 25);
+  display.println("ANIME");
+  display.setCursor(15, 45);
+  display.println("BOT");
+  display.display();
+  delay(1500);
+  
+  // Connect to WiFi
+  connectToWiFi();
+  
+  animationStartTime = millis();
+  
+  Serial.println("Setup complete! Touch sensor ready on pin D5");
+}
+
+void loop() {
+  // Check WiFi connection periodically
+  if (millis() - lastWifiCheck > 30000) {  // Check every 30 seconds
+    lastWifiCheck = millis();
+    if (WiFi.status() != WL_CONNECTED) {
+      connectToWiFi();
+    }
+  }
+  
+  // Check touch sensor
+  bool currentTouchState = digitalRead(TOUCH_PIN);
+  
+  // Touch pressed (HIGH to LOW transition)
+  if (currentTouchState == LOW && !lastTouchState) {
+    touchPressStart = millis();
+  }
+  
+  // Touch released (LOW to HIGH transition)
+  if (currentTouchState == HIGH && lastTouchState) {
+    unsigned long pressDuration = millis() - touchPressStart;
+    
+    if (pressDuration > 800) {
+      // Long press detected (>800ms)
+      isClockMode = !isClockMode;
+      clockStartTime = millis();
+      if (isClockMode) {
+        Serial.println("Clock Mode ON");
+      } else {
+        Serial.println("Clock Mode OFF");
+        animationStartTime = millis();
+      }
+    } else if (pressDuration > 50) {
+      // Short press detected
+      if (!isClockMode) {
+        currentAnimation = (AnimationState)((currentAnimation + 1) % 7);
+        animationStartTime = millis();
+        Serial.print("Face changed to: ");
+        Serial.println(currentAnimation);
+      }
+    }
+  }
+  
+  lastTouchState = currentTouchState;
+  
+  // Clear and draw current display
+  display.clearDisplay();
+  
+  if (isClockMode) {
+    drawClockDisplay();
+  } else {
+    switch (currentAnimation) {
+      case HAPPY:
+        drawHappyFace();
+        break;
+      case BLINKING:
+        drawBlinkingFace();
+        break;
+      case LOVE_EYES:
+        drawLoveEyesFace();
+        break;
+      case SHOCKED:
+        drawShockedFace();
+        break;
+      case SLEEPY:
+        drawSleepyFace();
+        break;
+      case EXCITED:
+        drawExcitedFace();
+        break;
+      case SHY:
+        drawShyFace();
+        break;
+    }
+  }
+  
+  display.display();
+  delay(50);
+}
+
+// ================== WiFi FUNCTIONS ==================
+
+void connectToWiFi() {
+  Serial.println("\n\nConnecting to WiFi...");
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(20, 20);
+  display.println("Connecting WiFi");
+  display.setCursor(20, 35);
+  display.println("Please wait...");
+  display.display();
+  
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    delay(500);
+    Serial.print(".");
+    attempts++;
+  }
+  
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\nWiFi connected!");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+    
+    wifiConnected = true;
+    
+    // Set time via NTP
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    
+    // Wait for time to be set
+    Serial.println("Waiting for NTP time sync...");
+    time_t now = time(nullptr);
+    int ntp_attempts = 0;
+    while (now < 24 * 3600 && ntp_attempts < 20) {
+      delay(500);
+      Serial.print("*");
+      now = time(nullptr);
+      ntp_attempts++;
+    }
+    Serial.println();
+    Serial.println("Time synchronized!");
+    
+  } else {
+    Serial.println("\nFailed to connect to WiFi");
+    wifiConnected = false;
+  }
+  
+  delay(1500);
+}
+
+// ================== CLOCK DISPLAY FUNCTION ==================
+
+void drawClockDisplay() {
+  // Get current time
+  time_t now = time(nullptr);
+  struct tm* timeinfo = localtime(&now);
+  
+  // Format display - large numbers
+  display.setTextSize(3);
+  display.setTextColor(SSD1306_WHITE);
+  
+  // Draw HH:MM:SS
+  char timeStr[9];
+  strftime(timeStr, sizeof(timeStr), "%H:%M", timeinfo);
+  
+  // Center the time display
+  display.setCursor(10, 15);
+  display.println(timeStr);
+  
+  // Draw date
+  display.setTextSize(1);
+  char dateStr[20];
+  strftime(dateStr, sizeof(dateStr), "%a %d %b %Y", timeinfo);
+  display.setCursor(5, 45);
+  display.println(dateStr);
+  
+  // Draw WiFi status
+  if (wifiConnected) {
+    display.setCursor(5, 55);
+    display.println("WiFi: Connected");
+  } else {
+    display.setCursor(5, 55);
+    display.println("WiFi: Offline");
+  }
+  
+  // Animated clock icon
+  unsigned long pulse = (millis() / 500) % 4;
+  int pulseSize = 1 + pulse;
+  
+  display.drawCircle(115, 10, 5, SSD1306_WHITE);
+  display.drawCircle(115, 10, 4, SSD1306_WHITE);
+  
+  // Clock hands
+  display.drawLine(115, 10, 115, 7, SSD1306_WHITE);   // Hour hand
+  display.drawLine(115, 10, 118, 10, SSD1306_WHITE);  // Minute hand
+  display.fillCircle(115, 10, 1, SSD1306_WHITE);      // Center dot
+  
+  // Pulsing indicator
+  for (int i = 0; i < pulseSize; i++) {
+    display.drawCircle(115, 10, 6 + i, SSD1306_WHITE);
+  }
+}
+
+// ================== FACE DRAWING FUNCTIONS ==================
+
+void drawHappyFace() {
+  // HUGE happy anime eyes
+  drawAnimeEye(28, 20, 0);   // Left eye
+  drawAnimeEye(100, 20, 0);  // Right eye
+  
+  // Happy mouth
+  display.drawLine(40, 50, 88, 50, SSD1306_WHITE);
+  display.drawLine(40, 51, 88, 51, SSD1306_WHITE);
+  
+  // Smile arc
+  for (int i = 0; i < 15; i++) {
+    float angle = (i / 15.0) * PI;
+    int x = 40 + i * 3.2;
+    int y = 52 + sin(angle) * 4;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+  
+  // Blush marks
+  drawBlush(15, 42);
+  drawBlush(113, 42);
+}
+
+void drawBlinkingFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  int phase = (elapsed / 400) % 5;
+  
+  // Left eye - normal
+  drawAnimeEye(28, 20, 0);
+  
+  // Right eye - blinking
+  if (phase == 0 || phase == 1) {
+    drawAnimeEye(100, 20, 0);  // Open
+  } else if (phase == 2) {
+    // Closed eye - curved line
+    display.drawLine(85, 20, 115, 18, SSD1306_WHITE);
+    display.drawLine(85, 21, 115, 19, SSD1306_WHITE);
+    display.drawLine(85, 22, 115, 20, SSD1306_WHITE);
+  } else {
+    drawAnimeEye(100, 20, 0);  // Open again
+  }
+  
+  // Gentle smile
+  display.drawLine(45, 50, 83, 50, SSD1306_WHITE);
+  display.drawLine(45, 51, 83, 51, SSD1306_WHITE);
+  
+  for (int i = 0; i < 10; i++) {
+    float angle = (i / 10.0) * PI;
+    int x = 45 + i * 3.8;
+    int y = 52 + sin(angle) * 3;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+}
+
+void drawLoveEyesFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float pulse = sin((elapsed / 500.0) * PI) * 0.5;
+  
+  // Love eyes (hearts inside anime eyes)
+  drawLoveEye(28, 20, pulse);
+  drawLoveEye(100, 20, pulse);
+  
+  // Kiss mouth
+  display.drawCircle(64, 52, 5, SSD1306_WHITE);
+  display.drawCircle(64, 52, 4, SSD1306_WHITE);
+  display.drawCircle(64, 52, 3, SSD1306_WHITE);
+  
+  // Floating hearts
+  drawTinyHeartAt(10, 8);
+  drawTinyHeartAt(118, 8);
+  drawTinyHeartAt(10, 55);
+  drawTinyHeartAt(118, 55);
+}
+
+void drawShockedFace() {
+  // HUGE shocked anime eyes
+  drawShockedAnimeEye(28, 20);
+  drawShockedAnimeEye(100, 20);
+  
+  // O mouth
+  display.drawCircle(64, 52, 6, SSD1306_WHITE);
+  display.drawCircle(64, 52, 5, SSD1306_WHITE);
+}
+
+void drawSleepyFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float yBob = sin((elapsed / 1200.0) * PI) * 2;
+  
+  // Sleepy closed eyes (curved lines)
+  display.drawLine(15, 20 + yBob, 40, 16 + yBob, SSD1306_WHITE);
+  display.drawLine(15, 21 + yBob, 40, 17 + yBob, SSD1306_WHITE);
+  display.drawLine(15, 22 + yBob, 40, 18 + yBob, SSD1306_WHITE);
+  
+  display.drawLine(88, 16 + yBob, 113, 20 + yBob, SSD1306_WHITE);
+  display.drawLine(88, 17 + yBob, 113, 21 + yBob, SSD1306_WHITE);
+  display.drawLine(88, 18 + yBob, 113, 22 + yBob, SSD1306_WHITE);
+  
+  // Peaceful smile
+  display.drawLine(45, 50, 83, 50, SSD1306_WHITE);
+  display.drawLine(45, 51, 83, 51, SSD1306_WHITE);
+  
+  // ZZZ floating
+  drawZZZ(110, 10 - yBob);
+  drawZZZ(115, 5 - yBob);
+  drawZZZ(110, 0 - yBob);
+}
+
+void drawExcitedFace() {
+  unsigned long elapsed = millis() - animationStartTime;
+  float bounce = sin((elapsed / 300.0) * PI) * 3;
+  
+  // Excited HUGE eyes
+  drawExcitedAnimeEye(28, 20 + bounce);
+  drawExcitedAnimeEye(100, 20 + bounce);
+  
+  // Big excited smile
+  for (int i = 0; i < 18; i++) {
+    float angle = (i / 18.0) * PI;
+    int x = 38 + i * 2.8;
+    int y = 52 + sin(angle) * 6;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+  display.drawLine(40, 52, 88, 52, SSD1306_WHITE);
+  display.drawLine(40, 53, 88, 53, SSD1306_WHITE);
+  
+  // Happy blush
+  drawBlush(12, 42);
+  drawBlush(116, 42);
+}
+
+void drawShyFace() {
+  // Shy downward eyes
+  display.drawLine(15, 16, 40, 26, SSD1306_WHITE);
+  display.drawLine(15, 17, 40, 27, SSD1306_WHITE);
+  display.drawLine(15, 18, 40, 28, SSD1306_WHITE);
+  display.drawLine(15, 19, 40, 29, SSD1306_WHITE);
+  
+  display.drawLine(88, 26, 113, 16, SSD1306_WHITE);
+  display.drawLine(88, 27, 113, 17, SSD1306_WHITE);
+  display.drawLine(88, 28, 113, 18, SSD1306_WHITE);
+  display.drawLine(88, 29, 113, 19, SSD1306_WHITE);
+  
+  // Bashful smile
+  display.drawLine(50, 50, 78, 50, SSD1306_WHITE);
+  
+  for (int i = 0; i < 8; i++) {
+    float angle = (i / 8.0) * PI;
+    int x = 50 + i * 3.5;
+    int y = 51 + sin(angle) * 2;
+    display.drawPixel(x, y, SSD1306_WHITE);
+  }
+  
+  // HUGE shy blush
+  for (int i = 0; i < 8; i++) {
+    display.drawCircle(10, 40 + i/2, 6 - i/2, SSD1306_WHITE);
+  }
+  for (int i = 0; i < 8; i++) {
+    display.drawCircle(118, 40 + i/2, 6 - i/2, SSD1306_WHITE);
+  }
+}
+
+// ================== ANIME EYE DRAWING FUNCTIONS ==================
+
+void drawAnimeEye(int x, int y, int lookDir) {
+  // Top eyelash line
+  display.drawLine(x - 12, y - 8, x + 12, y - 8, SSD1306_WHITE);
+  display.drawLine(x - 12, y - 7, x + 12, y - 7, SSD1306_WHITE);
+  
+  // Eye white (large)
+  display.drawCircle(x, y, 11, SSD1306_WHITE);
+  display.drawCircle(x, y, 10, SSD1306_WHITE);
+  
+  // Bottom eyelash line
+  display.drawLine(x - 12, y + 8, x + 12, y + 8, SSD1306_WHITE);
+  display.drawLine(x - 12, y + 9, x + 12, y + 9, SSD1306_WHITE);
+  
+  // Large iris
+  int irisX = x + (lookDir * 3);
+  int irisY = y;
+  display.fillCircle(irisX, irisY, 6, SSD1306_WHITE);
+  
+  // Large pupil
+  display.fillCircle(irisX + 2, irisY - 1, 3, SSD1306_BLACK);
+  
+  // Eye shine (highlight)
+  display.fillCircle(irisX + 3, irisY - 3, 1, SSD1306_WHITE);
+}
+
+void drawExcitedAnimeEye(int x, int y) {
+  // WIDER excited eyes
+  // Top eyelash
+  display.drawLine(x - 13, y - 9, x + 13, y - 9, SSD1306_WHITE);
+  display.drawLine(x - 13, y - 8, x + 13, y - 8, SSD1306_WHITE);
+  
+  // Eye white (extra large)
+  display.drawCircle(x, y, 12, SSD1306_WHITE);
+  display.drawCircle(x, y, 11, SSD1306_WHITE);
+  
+  // Bottom eyelash
+  display.drawLine(x - 13, y + 9, x + 13, y + 9, SSD1306_WHITE);
+  display.drawLine(x - 13, y + 10, x + 13, y + 10, SSD1306_WHITE);
+  
+  // Large iris
+  display.fillCircle(x, y, 7, SSD1306_WHITE);
+  
+  // Large pupil
+  display.fillCircle(x + 2, y - 1, 3, SSD1306_BLACK);
+  
+  // Shine
+  display.fillCircle(x + 4, y - 3, 1, SSD1306_WHITE);
+}
+
+void drawShockedAnimeEye(int x, int y) {
+  // Super wide shocked eyes
+  // Top eyelash
+  display.drawLine(x - 14, y - 10, x + 14, y - 10, SSD1306_WHITE);
+  display.drawLine(x - 14, y - 9, x + 14, y - 9, SSD1306_WHITE);
+  
+  // Eye white (huge)
+  display.drawCircle(x, y, 13, SSD1306_WHITE);
+  display.drawCircle(x, y, 12, SSD1306_WHITE);
+  
+  // Bottom eyelash
+  display.drawLine(x - 14, y + 10, x + 14, y + 10, SSD1306_WHITE);
+  display.drawLine(x - 14, y + 11, x + 14, y + 11, SSD1306_WHITE);
+  
+  // Tiny pupil (shocked look)
+  display.fillCircle(x, y, 4, SSD1306_WHITE);
+  display.fillCircle(x, y, 2, SSD1306_BLACK);
+}
+
+void drawLoveEye(int x, int y, float pulse) {
+  // Top eyelash
+  display.drawLine(x - 12, y - 8, x + 12, y - 8, SSD1306_WHITE);
+  display.drawLine(x - 12, y - 7, x + 12, y - 7, SSD1306_WHITE);
+  
+  // Eye white
+  display.drawCircle(x, y, 11, SSD1306_WHITE);
+  display.drawCircle(x, y, 10, SSD1306_WHITE);
+  
+  // Bottom eyelash
+  display.drawLine(x - 12, y + 8, x + 12, y + 8, SSD1306_WHITE);
+  display.drawLine(x - 12, y + 9, x + 12, y + 9, SSD1306_WHITE);
+  
+  // Heart shape inside
+  int hx = x;
+  int hy = y;
+  
+  // Heart top
+  display.fillCircle(hx - 2, hy - 2, 2, SSD1306_WHITE);
+  display.fillCircle(hx + 2, hy - 2, 2, SSD1306_WHITE);
+  
+  // Heart bottom
+  display.drawLine(hx - 3, hy + 1, hx, hy + 5, SSD1306_WHITE);
+  display.drawLine(hx + 3, hy + 1, hx, hy + 5, SSD1306_WHITE);
+  display.drawLine(hx - 2, hy + 1, hx, hy + 4, SSD1306_WHITE);
+  display.drawLine(hx + 2, hy + 1, hx, hy + 4, SSD1306_WHITE);
+}
+
+// ================== HELPER FUNCTIONS ==================
+
+void drawBlush(int x, int y) {
+  // Large circular blush
+  for (int r = 4; r >= 1; r--) {
+    display.drawCircle(x, y, r, SSD1306_WHITE);
+  }
+}
+
+void drawTinyHeartAt(int x, int y) {
+  display.drawPixel(x, y - 1, SSD1306_WHITE);
+  display.drawPixel(x - 1, y, SSD1306_WHITE);
+  display.drawPixel(x, y, SSD1306_WHITE);
+  display.drawPixel(x + 1, y, SSD1306_WHITE);
+  display.drawPixel(x, y + 1, SSD1306_WHITE);
+}
+
+void drawZZZ(int x, int y) {
+  // Z shape
+  display.drawLine(x, y, x + 3, y, SSD1306_WHITE);
+  display.drawLine(x, y + 1, x + 3, y + 1, SSD1306_WHITE);
+  display.drawLine(x + 3, y + 1, x, y + 3, SSD1306_WHITE);
+  display.drawLine(x, y + 3, x + 3, y + 3, SSD1306_WHITE);
+}
