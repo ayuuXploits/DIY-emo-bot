@@ -6,16 +6,16 @@
 
 ## Parts Overview
 
-| # | File | Role | Dimensions (mm) | Complexity |
-|---|------|------|-----------------|------------|
-| 1 | `obj_1_Yeti Full.stl_1` | Head / Side Housing | 40 × 31 × 38 | Medium |
-| 2 | `obj_2_Yeti Full.stl_7` | Base Plate | 90 × 90 × 28 | Medium |
-| 3 | `obj_3_Yeti Full.stl_2` | Ear / Side Accent | 30 × 33 × 22 | Low |
-| 4 | `obj_4_Yeti Full.stl_3` | Face Display Panel | 56 × 51 × 4 | High detail |
-| 5 | `obj_5_Yeti Full.stl_4` | Mounting Clip A | 20 × 22 × 3 | Simple |
-| 6 | `obj_6_Yeti Full.stl_8` | Mounting Clip B | 13 × 17 × 2 | Simple |
-| 7 | `obj_7_corp+face.stl_1` | Main Body (Corpus + Face) | 75 × 75 × 41 | ⭐ Most complex |
-| 8 | `obj_8_corp+face.stl_2` | Chest / Screen Panel | 37 × 29 × 4 | High detail |
+| # | File                    | Role                     | Dimensions (mm) | Complexity |
+|---|------------------|------|--------------------------|-----------------|------------|
+| 1 | `obj_1_Yeti Full.stl_1` | Head / Side Housing      | 40 × 31 × 38    | Medium     |
+| 2 | `obj_2_Yeti Full.stl_7` | Base Plate               | 90 × 90 × 28    | Medium     |
+| 3 | `obj_3_Yeti Full.stl_2` | Ear / Side Accent        | 30 × 33 × 22    | Low        |
+| 4 | `obj_4_Yeti Full.stl_3` | Face Display Panel       | 56 × 51 × 4     | High detail|
+| 5 | `obj_5_Yeti Full.stl_4` | Mounting Clip A          | 20 × 22 × 3     | Simple     |
+| 6 | `obj_6_Yeti Full.stl_8` | Mounting Clip B          | 13 × 17 × 2     | Simple     |
+| 7 | `obj_7_corp+face.stl_1` | Main Body (Corpus + Face)| 75 × 75 × 41    | ⭐ Most complex |
+| 8 | `obj_8_corp+face.stl_2` | Chest / Screen Panel     | 37 × 29 × 4     | High detail |
 
 ---
 
