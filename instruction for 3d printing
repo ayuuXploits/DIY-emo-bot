@@ -169,13 +169,13 @@ ironing = 1                 # parts 4 & 8, top surfaces
 
 ## Troubleshooting
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| Panel (part 4/8) warping | Thin flat part cooling unevenly | Add brim 3 mm, slow first layer to 20 mm/s |
-| Layer separation on clips | PETG under-extruded | Raise temp +5 °C, check E-steps |
-| Rough surface on body (7) | Layer lines too coarse | Drop to 0.16 mm layer height |
-| Supports hard to remove | Too many contact points | Switch to tree supports, 0.2 mm Z gap |
-| Fit too tight between parts | Elephant foot on first layer | Enable first-layer compensation (−0.1 mm) |
+| Issue                     | Cause                           | Fix                                        |
+|---------------------------|---------------------------------|--------------------------------------------|
+| Panel (part 4/8) warping  | Thin flat part cooling unevenly | Add brim 3 mm, slow first layer to 20 mm/s |
+| Layer separation on clips | PETG under-extruded             | Raise temp +5 °C, check E-steps            |
+| Rough surface on body (7) | Layer lines too coarse          | Drop to 0.16 mm layer height               |
+| Supports hard to remove   | Too many contact points         | Switch to tree supports, 0.2 mm Z gap      |
+| Fit too tight between parts | Elephant foot on first layer  | Enable first-layer compensation (−0.1 mm)  |
 
 ---
 
