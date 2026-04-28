@@ -6,21 +6,21 @@ A viral cute **ekik/emo-style** anime face bot running on **Wemos D1 Mini** with
 
 ## 📸 Expressions
 
-| 😊 Happy | 😐 Blinking | 💕 Love Eyes | 😲 Shocked | 😴 Sleepy | 🤩 Excited | 🥰 Shy |
-|---------|-----------|------------|---------|--------|---------|-----|
+| 😊 Happy          | 😐 Blinking | 💕 Love Eyes | 😲 Shocked      | 😴 Sleepy   | 🤩 Excited      | 🥰 Shy       |
+|-------------------|--------------|--------------|-----------------|-------------|------------------|--------------|
 | Big smile + blush | Auto-winking | Heart pupils | Super wide eyes | ZZZ bobbing | Bouncing + smile | Looking down |
 
 ---
 
 ## 🛒 Hardware
 
-| Component | Notes |
-|-----------|-------|
-| Wemos D1 Mini | ESP8266 based |
-| 128x64 I2C OLED | SSD1306 chip, address `0x3C` |
-| Capacitive Touch Sensor | TTP223 or similar |
-| Jumper wires | Male-to-female |
-| USB Micro cable | For flashing |
+| Component               | Notes                        |
+|-------------------------|------------------------------|
+| Wemos D1 Mini           | ESP8266 based                |
+| 128x64 I2C OLED         | SSD1306 chip, address `0x3C` |
+| Capacitive Touch Sensor | TTP223 or similar            |
+| Jumper wires            | Male-to-female               |
+| USB Micro cable         | For flashing                 |
 
 ---
 
@@ -115,18 +115,18 @@ const int  daylightOffset_sec = 0;
 
 **Common timezone offsets:**
 
-| Timezone | gmtOffset_sec |
-|----------|--------------|
-| UTC | `0` |
-| IST — India (UTC+5:30) | `19800` |
-| EST — US East (UTC−5) | `-18000` |
-| CST — US Central (UTC−6) | `-21600` |
-| PST — US West (UTC−8) | `-28800` |
-| GMT+1 — Central Europe | `3600` |
-| GST — Gulf (UTC+4) | `14400` |
-| SGT — Singapore (UTC+8) | `28800` |
-| AEST — Australia East (UTC+10) | `36000` |
-| NZST — New Zealand (UTC+12) | `43200` |
+| Timezone                        | gmtOffset_sec |
+|---------------------------------|---------------|
+| UTC                             | `0`           |
+| IST — India (UTC+5:30)          | `19800`       |
+| EST — US East (UTC−5)           | `-18000`      |
+| CST — US Central (UTC−6)        | `-21600`      |
+| PST — US West (UTC−8)           | `-28800`      |
+| GMT+1 — Central Europe          | `3600`        |
+| GST — Gulf (UTC+4)              | `14400`       |
+| SGT — Singapore (UTC+8)         | `28800`       |
+| AEST — Australia East (UTC+10)  | `36000`       |
+| NZST — New Zealand (UTC+12)     | `43200`       |
 
 ### 6 — Select Board Settings in Arduino IDE
 
@@ -188,11 +188,11 @@ Setup complete! Touch sensor ready on pin D5
 
 ## 🎮 Usage
 
-| Action | Result |
-|--------|--------|
-| **Short Tap** (< 800 ms) | Cycle to next anime expression |
-| **Long Press** (> 800 ms) | Toggle real-time WiFi clock |
-| **Long Press again** | Return to anime expressions |
+| Action                    |       Result                   |
+|---------------------------|--------------------------------|
+| **Short Tap** (< 800 ms)  | Cycle to next anime expression |
+| **Long Press** (> 800 ms) | Toggle real-time WiFi clock    |
+| **Long Press again**      | Return to anime expressions    |
 
 ### Expression Cycle Order
 
@@ -225,10 +225,11 @@ Tap 8 → 😊 HAPPY  (loops back)
 ```
 anime-cute-face-bot/
 ├── README.md                          (This file!)
+|--emo_bot.ino                          (v1)
 ├── emo_bot_vmax.ino                   (Main code)
 ├── LICENSE                            (MIT License)
 ├── EMO_bot.zip                       (for 3d printing parts)
-```
+|--instrutions for 3d printing
 
 ---
 
@@ -343,10 +344,10 @@ currentAnimation = (AnimationState)((currentAnimation + 1) % 8);
 
 ## 📦 Dependencies
 
-| Library | Link |
-|---------|------|
-| ESP8266 Arduino Core | [github.com/esp8266/Arduino](https://github.com/esp8266/Arduino) |
-| Adafruit SSD1306 | [github.com/adafruit/Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306) |
+| Library              |              Link                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------|
+| ESP8266 Arduino Core | [github.com/esp8266/Arduino](https://github.com/esp8266/Arduino)                             |
+| Adafruit SSD1306     | [github.com/adafruit/Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306)         |
 | Adafruit GFX Library | [github.com/adafruit/Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library) |
 
 ---
