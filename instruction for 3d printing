@@ -1,0 +1,182 @@
+# 🤖 Yeti EMO Bot — 3D Printing Guide (v1.2)
+
+> Complete print instructions for all 8 STL parts from `yeti_v1_2_stls.zip`
+
+---
+
+## Parts Overview
+
+| # | File | Role | Dimensions (mm) | Complexity |
+|---|------|------|-----------------|------------|
+| 1 | `obj_1_Yeti Full.stl_1` | Head / Side Housing | 40 × 31 × 38 | Medium |
+| 2 | `obj_2_Yeti Full.stl_7` | Base Plate | 90 × 90 × 28 | Medium |
+| 3 | `obj_3_Yeti Full.stl_2` | Ear / Side Accent | 30 × 33 × 22 | Low |
+| 4 | `obj_4_Yeti Full.stl_3` | Face Display Panel | 56 × 51 × 4 | High detail |
+| 5 | `obj_5_Yeti Full.stl_4` | Mounting Clip A | 20 × 22 × 3 | Simple |
+| 6 | `obj_6_Yeti Full.stl_8` | Mounting Clip B | 13 × 17 × 2 | Simple |
+| 7 | `obj_7_corp+face.stl_1` | Main Body (Corpus + Face) | 75 × 75 × 41 | ⭐ Most complex |
+| 8 | `obj_8_corp+face.stl_2` | Chest / Screen Panel | 37 × 29 × 4 | High detail |
+
+---
+
+## Recommended Printer Settings
+
+These settings apply to all parts unless a part-specific note overrides them.
+
+| Setting | Value |
+|---------|-------|
+| **Layer height** | 0.2 mm (use 0.12 mm for face panels — parts 4 & 8) |
+| **Infill** | 20% Gyroid |
+| **Walls / perimeters** | 3 |
+| **Top/bottom layers** | 5 |
+| **Print speed** | 50 mm/s (40 mm/s for detail parts) |
+| **Nozzle temp** | 210 °C (PLA) / 230 °C (PETG) |
+| **Bed temp** | 60 °C (PLA) / 70 °C (PETG) |
+| **Cooling** | 100% part cooling fan |
+| **Supports** | See per-part notes below |
+
+### Recommended Filament
+
+- **Primary body parts (1, 2, 3, 7):** White or light grey PLA/PETG — easy to paint or leave as-is
+- **Face & display panels (4, 8):** Black PLA — creates visual contrast for display cutouts
+- **Clips (5, 6):** PETG preferred for flexibility and grip
+
+---
+
+## Per-Part Print Instructions
+
+### Part 1 — Head / Side Housing
+`obj_1_Yeti Full.stl_1.stl` | 40 × 31 × 38 mm
+
+- **Orientation:** Place the largest flat face on the bed
+- **Supports:** Yes — enable for any overhangs > 45°
+- **Infill:** 20%
+- **Notes:** This is a structural housing; go 3 walls minimum. Check fit with Part 7 before final print.
+
+---
+
+### Part 2 — Base Plate
+`obj_2_Yeti Full.stl_7.stl` | 90 × 90 × 28 mm
+
+- **Orientation:** Flat side down — no rotation needed
+- **Supports:** Not required
+- **Infill:** 25% — slightly higher for rigidity since it carries the full robot weight
+- **Notes:** Largest footprint part. Ensure your bed is properly leveled. Use a brim (5 mm) if adhesion is a concern.
+
+---
+
+### Part 3 — Ear / Side Accent
+`obj_3_Yeti Full.stl_2.stl` | 30 × 33 × 22 mm
+
+- **Orientation:** Flat face down
+- **Supports:** Minimal or none
+- **Infill:** 15% — decorative part, low stress
+- **Notes:** Print two copies if the design is symmetrical (check your model). Low triangle count means fast print.
+
+---
+
+### Part 4 — Face Display Panel ⭐ High Detail
+`obj_4_Yeti Full.stl_3.stl` | 56 × 51 × 4 mm
+
+- **Orientation:** Flat on bed — **do not tilt**
+- **Supports:** Not required (thin flat part)
+- **Layer height:** **0.12 mm** — critical for surface quality on this panel
+- **Infill:** 20%
+- **Notes:** This is a display-facing panel with fine surface detail (3892 triangles for a 4 mm thick part). Slow down to 35–40 mm/s for top layer. Consider ironing the top surface in your slicer for a smooth finish.
+
+---
+
+### Part 5 — Mounting Clip A
+`obj_5_Yeti Full.stl_4.stl` | 20 × 22 × 3 mm
+
+- **Orientation:** Flat on bed
+- **Supports:** Not required
+- **Material:** PETG preferred (clip needs flex)
+- **Notes:** Tiny part — nest multiples on the bed to save a print run. Print 2–4 spares.
+
+---
+
+### Part 6 — Mounting Clip B
+`obj_6_Yeti Full.stl_8.stl` | 13 × 17 × 2 mm
+
+- **Orientation:** Flat on bed
+- **Supports:** Not required
+- **Material:** PETG preferred
+- **Notes:** Thinnest part (2 mm). Handle carefully post-print. Print extras.
+
+---
+
+### Part 7 — Main Body (Corpus + Face) ⭐ Primary Part
+`obj_7_corp+face.stl_1.stl` | 75 × 75 × 41 mm
+
+- **Orientation:** Bottom flat face on bed
+- **Supports:** Yes — **tree supports** recommended to protect internal geometry
+- **Infill:** 20% Gyroid
+- **Walls:** 4 (extra rigidity — this houses your electronics)
+- **Layer height:** 0.2 mm
+- **Notes:** Largest and most complex part (11,048 triangles). Budget ~4–6 hours print time depending on your printer. This part accommodates your servo, display, and wiring — test component fit before gluing anything. Leave cable routing channels clear.
+
+---
+
+### Part 8 — Chest / Screen Panel ⭐ High Detail
+`obj_8_corp+face.stl_2.stl` | 37 × 29 × 4 mm
+
+- **Orientation:** Flat on bed
+- **Supports:** Not required
+- **Layer height:** **0.12 mm** — matches Part 4 quality requirement
+- **Notes:** Similar detail density to Part 4 (3592 triangles, 4 mm thick). Same slicer settings apply. Print in black or a contrasting color if it frames a display.
+
+---
+
+## Print Order Recommendation
+
+Print in this order to catch fit issues early before committing to longer prints:
+
+1. **Parts 5 & 6** (clips) — quick functional test, verify PETG settings
+2. **Part 3** (ear accent) — fast, warm up your PLA
+3. **Part 1** (side housing) — test fit against Part 7 footprint
+4. **Parts 4 & 8** (face/chest panels) — slow detailed prints, do overnight
+5. **Part 2** (base plate) — large flat print, straightforward
+6. **Part 7** (main body) — save the longest print for last, confirm all other parts fit first
+
+---
+
+## Post-Processing
+
+- **Remove supports** with flush cutters before assembling
+- **Sand seam lines** on visible surfaces with 220 → 400 grit
+- **Test-fit all parts dry** before any glue or hardware
+- **Cable routing:** Route wires through Part 7 body channels before closing the assembly
+- **Painting:** Prime with grey filler primer; acrylic paint adheres well to PLA and PETG
+
+---
+
+## Slicer Profiles (Quick Reference)
+
+```
+# PrusaSlicer / OrcaSlicer recommended profile
+layer_height = 0.2          # 0.12 for parts 4 & 8
+perimeters = 3              # 4 for part 7
+infill_density = 20%
+infill_pattern = gyroid
+support_material = 1        # parts 1 & 7 only
+support_style = tree        # part 7
+brim_width = 5              # part 2 only
+ironing = 1                 # parts 4 & 8, top surfaces
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Panel (part 4/8) warping | Thin flat part cooling unevenly | Add brim 3 mm, slow first layer to 20 mm/s |
+| Layer separation on clips | PETG under-extruded | Raise temp +5 °C, check E-steps |
+| Rough surface on body (7) | Layer lines too coarse | Drop to 0.16 mm layer height |
+| Supports hard to remove | Too many contact points | Switch to tree supports, 0.2 mm Z gap |
+| Fit too tight between parts | Elephant foot on first layer | Enable first-layer compensation (−0.1 mm) |
+
+---
+
+*Generated from `yeti_v1_2_stls.zip` — 8 STL files analyzed · Yeti EMO Bot v1.2*
