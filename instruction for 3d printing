@@ -23,17 +23,17 @@
 
 These settings apply to all parts unless a part-specific note overrides them.
 
-| Setting | Value |
-|---------|-------|
-| **Layer height** | 0.2 mm (use 0.12 mm for face panels — parts 4 & 8) |
-| **Infill** | 20% Gyroid |
-| **Walls / perimeters** | 3 |
-| **Top/bottom layers** | 5 |
-| **Print speed** | 50 mm/s (40 mm/s for detail parts) |
-| **Nozzle temp** | 210 °C (PLA) / 230 °C (PETG) |
-| **Bed temp** | 60 °C (PLA) / 70 °C (PETG) |
-| **Cooling** | 100% part cooling fan |
-| **Supports** | See per-part notes below |
+| Setting                | Value                                              |
+|------------------------|----------------------------------------------------|
+| **Layer height**       | 0.2 mm (use 0.12 mm for face panels — parts 4 & 8) |
+| **Infill**             | 20% Gyroid                                         |
+| **Walls / perimeters** | 3                                                  |
+| **Top/bottom layers**  | 5                                                  |
+| **Print speed**        | 50 mm/s (40 mm/s for detail parts)                 |
+| **Nozzle temp**        | 210 °C (PLA) / 230 °C (PETG)                       |
+| **Bed temp**           | 60 °C (PLA) / 70 °C (PETG)                         |
+| **Cooling**            | 100% part cooling fan                              |
+| **Supports**           | See per-part notes below                           |
 
 ### Recommended Filament
 
