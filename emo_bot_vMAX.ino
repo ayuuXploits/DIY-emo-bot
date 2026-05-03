@@ -1,30 +1,3 @@
-/*
-  Wemos D1 Mini OLED Desk Bot 🤖✨
-  ─────────────────────────────────────────────────────
-  Ported from ESP32 original by Abay Melethil
-  Adapted for Wemos D1 Mini (ESP8266)
-
-  ── Wiring ────────────────────────────────────────────
-  OLED (SSD1306 128x64 I2C)    Capacitive Touch (TTP223)
-  ───────────────────────────  ─────────────────────────
-  VCC  → 3V3                   VCC    → 3V3
-  GND  → GND                   GND    → GND
-  SDA  → D2 (GPIO4)            SIGNAL → D5 (GPIO14)
-  SCL  → D1 (GPIO5)
-
-  ── Libraries (install via Library Manager) ───────────
-    Adafruit SSD1306
-    Adafruit GFX Library
-    ArduinoJson  (v6)
-
-  ── Board settings ────────────────────────────────────
-    Board         : LOLIN(WEMOS) D1 R2 & mini
-    CPU Frequency : 80 MHz
-    Upload Speed  : 921600
-  ─────────────────────────────────────────────────────
-  Original: Abay Melethil  |  MIT License
-*/
-
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
