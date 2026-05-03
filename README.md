@@ -2,9 +2,7 @@
 
 An expressive desktop companion running on a **Wemos D1 Mini (ESP8266)** with a 128×64 OLED display and capacitive touch sensor. Features animated emotions, a live NTP clock, and real-time weather — all on a tiny screen.
 
-Ported and adapted from the original ESP32 version by [Abay Melethil](https://github.com/Abaymelethil).
 
----
 
 ## 😊 Expressions & Modes
 
