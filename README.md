@@ -1,6 +1,6 @@
 # 🍡 Anime Cute Face Bot
 
-A viral cute **ekik/emo-style** anime face bot running on **Wemos D1 Mini** with a 128x64 OLED display and capacitive touch sensor. Features huge expressive anime eyes, 7 cute animations, and a **WiFi real-time NTP clock** triggered by long press.
+A viral cute **elik/emo-style** anime face bot running on **Wemos D1 Mini** with a 128x64 OLED display and capacitive touch sensor. Features huge expressive anime eyes, 7 cute animations, and a **WiFi real-time NTP clock** triggered by long press.
 
 ---
 
