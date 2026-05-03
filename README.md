@@ -71,13 +71,15 @@ Go to **Sketch → Include Library → Manage Libraries** and install:
 Adafruit SSD1306       by Adafruit Industries
 Adafruit GFX Library   by Adafruit Industries
 ArduinoJson            by Benoit Blanchon  (install v6)
-### — Get the Code
-Clone the repo to your machine:
-bashgit clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+```
+
+###Clone the repo to your machine:
+```
+bashgit clone https://github.com/ayuuXploits/DIY_emo_bot.git
+cd DIY_emo_bot.git
 To pull the latest changes later (if the repo gets updated):
 bashgit pull origin main
-Then open DeskBot_D1Mini.ino in Arduino IDE.
+Then open emo_bot_vMAX.ino in Arduino IDE.
 ```
 
 ### 4 — Configure the Code
