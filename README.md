@@ -1,38 +1,50 @@
-# 🍡 Anime Cute Face Bot
+# 🤖 Wemos D1 Mini OLED Desk Bot
 
-A viral cute **elik/emo-style** anime face bot running on **Wemos D1 Mini** with a 128x64 OLED display and capacitive touch sensor. Features huge expressive anime eyes, 7 cute animations, and a **WiFi real-time NTP clock** triggered by long press.
+An expressive desktop companion running on a **Wemos D1 Mini (ESP8266)** with a 128×64 OLED display and capacitive touch sensor. Features animated emotions, a live NTP clock, and real-time weather — all on a tiny screen.
+
+Ported and adapted from the original ESP32 version by [Abay Melethil](https://github.com/Abaymelethil).
 
 ---
 
-## 📸 Expressions
+## 😊 Expressions & Modes
 
-| 😊 Happy          | 😐 Blinking | 💕 Love Eyes | 😲 Shocked      | 😴 Sleepy   | 🤩 Excited      | 🥰 Shy       |
-|-------------------|--------------|--------------|-----------------|-------------|------------------|--------------|
-| Big smile + blush | Auto-winking | Heart pupils | Super wide eyes | ZZZ bobbing | Bouncing + smile | Looking down |
+| Mode | Expression | Single Tap | Long Press |
+|------|-----------|------------|------------|
+| 0 | 😊 **Alive** — blinking, looking around, yawning | Puppy squint | Pet the bot (big smile) |
+| 1 | 💕 **Love** — beating heart eyes | — | — |
+| 2 | 😠 **Angry** — furrowed eyes + fire | Recoil/reject | Full furious shake |
+| 3 | 😢 **Sad** — crying tears | — | Comfort (stops tears) |
+| 4 | 😵 **Dizzy** — spiral eyes + wavy mouth | — | — |
+| 5 | 🕐 **Clock** — live NTP time display | — | — |
+| 6 | 🌤️ **Weather** — temp + animated clouds | — | — |
+
+**Double-tap** the sensor at any time to cycle to the next mode.
+
+After **1 minute** of no interaction, the bot yawns, drifts off to sleep, and shows the clock screen automatically. Any touch wakes it back up.
 
 ---
 
 ## 🛒 Hardware
 
-| Component               | Notes                        |
-|-------------------------|------------------------------|
-| Wemos D1 Mini           | ESP8266 based                |
-| 128x64 I2C OLED         | SSD1306 chip, address `0x3C` |
-| Capacitive Touch Sensor | TTP223 or similar            |
-| Jumper wires            | Male-to-female               |
-| USB Micro cable         | For flashing                 |
+| Component | Notes |
+|-----------|-------|
+| Wemos D1 Mini | ESP8266-based |
+| 0.96" I2C OLED | SSD1306 chip, 128×64, address `0x3C` |
+| Capacitive Touch Sensor | TTP223 or compatible |
+| Jumper wires | Male-to-female |
+| USB Micro cable | For flashing |
 
 ---
 
 ## 🔌 Wiring
 
 ```
-OLED Display (I2C)         Touch Sensor
-──────────────────         ─────────────
-VCC  → 3V3                 VCC    → 3V3
-GND  → GND                 GND    → GND
-SDA  → D2  (GPIO4)         SIGNAL → D5  (GPIO14)
-SCL  → D1  (GPIO5)
+OLED Display (I2C)              Capacitive Touch (TTP223)
+──────────────────              ──────────────────────────
+VCC    → 3V3                    VCC    → 3V3
+GND    → GND                    GND    → GND
+SDA    → D2  (GPIO4)            SIGNAL → D5  (GPIO14)
+SCL    → D1  (GPIO5)
 ```
 
 ---
@@ -41,19 +53,11 @@ SCL  → D1  (GPIO5)
 
 ### 1 — Install Arduino IDE
 
-```bash
-# macOS (Homebrew)
-brew install --cask arduino-ide
+Download from [arduino.cc/en/software](https://www.arduino.cc/en/software)
 
-# Or download manually
-# https://www.arduino.cc/en/software
-```
+### 2 — Add ESP8266 Board Package
 
-### 2 — Install ESP8266 Board Package
-
-Open Arduino IDE → **File → Preferences**
-
-Paste this URL into **Additional Boards Manager URLs**:
+Open **File → Preferences** and paste this into *Additional Boards Manager URLs*:
 
 ```
 http://arduino.esp8266.com/stable/package_esp8266com_index.json
@@ -61,191 +65,89 @@ http://arduino.esp8266.com/stable/package_esp8266com_index.json
 
 Then go to **Tools → Board Manager**, search `esp8266`, and install **ESP8266 by ESP8266 Community**.
 
-Or via Arduino CLI:
+### 3 — Install Libraries
 
-```bash
-# Install Arduino CLI (macOS/Linux)
-curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-
-# Add ESP8266 board package
-arduino-cli config init
-arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
-arduino-cli core update-index
-arduino-cli core install esp8266:esp8266
-```
-
-### 3 — Install Required Libraries
-
-Go to **Sketch → Include Library → Manage Libraries**
-
-Search and install:
+Go to **Sketch → Include Library → Manage Libraries** and install:
 
 ```
-Adafruit SSD1306      by Adafruit Industries
-Adafruit GFX Library  by Adafruit Industries
+Adafruit SSD1306       by Adafruit Industries
+Adafruit GFX Library   by Adafruit Industries
+ArduinoJson            by Benoit Blanchon  (install v6)
+### — Get the Code
+Clone the repo to your machine:
+bashgit clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
+To pull the latest changes later (if the repo gets updated):
+bashgit pull origin main
+Then open DeskBot_D1Mini.ino in Arduino IDE.
 ```
 
-Or via Arduino CLI:
+### 4 — Configure the Code
 
-```bash
-arduino-cli lib install "Adafruit SSD1306"
-arduino-cli lib install "Adafruit GFX Library"
-```
-
-### 4 — Clone This Repo
-
-```bash
-git clone https://github.com/ayuuXploits/anime-cute-face-bot.git
-cd anime-cute-face-bot
-```
-
-### 5 — Configure WiFi + Timezone
-
-Open `mochi_bot_wifi_clock.ino` and edit lines **29–35**:
+Open `emo_bot_vMAX.ino` and edit the top section:
 
 ```cpp
-// ── WiFi credentials ──────────────────────────────────
-const char* ssid     = "YOUR_SSID";       // ← your WiFi name
-const char* password = "YOUR_PASSWORD";   // ← your WiFi password
+const char* ssid       = "YOUR_WIFI_SSID";      // ← your WiFi name
+const char* password   = "YOUR_WIFI_PASSWORD";  // ← your WiFi password
+const char* PLACE_NAME = "New York City";        // ← your city name
 
-// ── Timezone offset in seconds ────────────────────────
-const long gmtOffset_sec      = 19800;   // IST = UTC+5:30 → 5.5×3600
-const int  daylightOffset_sec = 0;
+#define LATITUDE   40.7128    // ← your latitude
+#define LONGITUDE -74.0060    // ← your longitude
+
+#define TZ_OFFSET_SEC 19800   // ← timezone offset in seconds (IST default)
 ```
 
 **Common timezone offsets:**
 
-| Timezone                        | gmtOffset_sec |
-|---------------------------------|---------------|
-| UTC                             | `0`           |
-| IST — India (UTC+5:30)          | `19800`       |
-| EST — US East (UTC−5)           | `-18000`      |
-| CST — US Central (UTC−6)        | `-21600`      |
-| PST — US West (UTC−8)           | `-28800`      |
-| GMT+1 — Central Europe          | `3600`        |
-| GST — Gulf (UTC+4)              | `14400`       |
-| SGT — Singapore (UTC+8)         | `28800`       |
-| AEST — Australia East (UTC+10)  | `36000`       |
-| NZST — New Zealand (UTC+12)     | `43200`       |
+| Timezone | `TZ_OFFSET_SEC` |
+|----------|-----------------|
+| IST — India (UTC+5:30) | `19800` |
+| UTC | `0` |
+| EST — US East (UTC−5) | `-18000` |
+| PST — US West (UTC−8) | `-28800` |
+| GMT+1 — Central Europe | `3600` |
+| GST — Gulf (UTC+4) | `14400` |
+| SGT — Singapore (UTC+8) | `28800` |
+| AEST — Australia East (UTC+10) | `36000` |
 
-### 6 — Select Board Settings in Arduino IDE
+### 5 — Board Settings
 
 Go to **Tools** and set:
 
 ```
-Board         → LOLIN(WEMOS) D1 mini (ESP8266)
+Board         → LOLIN(WEMOS) D1 R2 & mini
 CPU Frequency → 80 MHz
 Flash Size    → 4M (3M SPIFFS)
 Upload Speed  → 921600
-Port          → /dev/cu.usbserial-XXXX   (macOS)
-                /dev/ttyUSB0             (Linux)
-                COM3                     (Windows)
+Port          → COM3 (Windows) / /dev/ttyUSB0 (Linux) / /dev/cu.usbserial-XXXX (macOS)
 ```
 
-### 7 — Upload
+### 6 — Upload
 
-Click the **→ Upload** button, or via Arduino CLI:
-
-```bash
-# Compile
-arduino-cli compile --fqbn esp8266:esp8266:d1_mini mochi_bot_wifi_clock.ino
-
-# Upload (replace port with yours)
-arduino-cli upload --fqbn esp8266:esp8266:d1_mini --port /dev/cu.usbserial-XXXX mochi_bot_wifi_clock.ino
-```
-
-### 8 — Monitor Serial Output
-
-Open **Tools → Serial Monitor** and set baud rate to `115200`
-
-Or via terminal:
-
-```bash
-# macOS / Linux using screen
-screen /dev/cu.usbserial-XXXX 115200
-
-# Linux using minicom
-minicom -b 115200 -D /dev/ttyUSB0
-
-# Exit screen: press Ctrl+A then K
-```
-
-Expected boot output:
-
-```
-ANIME EYES BOT Starting...
-Connecting to WiFi...
-..........
-WiFi connected!
-IP address: 192.168.x.x
-Waiting for NTP time sync...
-****
-Time synchronized!
-Setup complete! Touch sensor ready on pin D5
-```
+Click the **→ Upload** button in Arduino IDE.
 
 ---
 
 ## 🎮 Usage
 
-| Action                    |       Result                   |
-|---------------------------|--------------------------------|
-| **Short Tap** (< 800 ms)  | Cycle to next anime expression |
-| **Long Press** (> 800 ms) | Toggle real-time WiFi clock    |
-| **Long Press again**      | Return to anime expressions    |
-
-### Expression Cycle Order
-
-```
-Tap 1 → 😊 HAPPY
-Tap 2 → 😐 BLINKING
-Tap 3 → 💕 LOVE EYES
-Tap 4 → 😲 SHOCKED
-Tap 5 → 😴 SLEEPY
-Tap 6 → 🤩 EXCITED
-Tap 7 → 🥰 SHY
-Tap 8 → 😊 HAPPY  (loops back)
-```
-
-### Clock Display (Long Press)
-
-```
-┌────────────────────────────┐
-│     12:34               🕐 │
-│                            │
-│  Sun 27 Apr 2026           │
-│  WiFi: Connected           │
-└────────────────────────────┘
-```
-
----
-
-## 📁 File Structure
-
-```
-anime-cute-face-bot/
-├── README.md                          (This file!)
-|--emo_bot.ino                          (v1)
-├── emo_bot_vmax.ino                   (Main code)
-├── LICENSE                            (MIT License)
-├── EMO_bot.zip                       (for 3d printing parts)
-|--instrutions for 3d printing
+| Gesture | Action |
+|---------|--------|
+| **Double tap** | Cycle to next mode |
+| **Single tap** | Mode-specific reaction (see table above) |
+| **Long press** (hold 600ms+) | Mode-specific interaction |
+| **Any touch** | Wake from sleep |
 
 ---
 
 ## 🐛 Troubleshooting
 
 ### OLED shows nothing
-
-```
-1. Run I2C Scanner below to find your display address
-2. Default is 0x3C — change to 0x3D in setup() if needed
-3. Double-check SDA→D2 and SCL→D1
-```
-
-**I2C Scanner — paste and upload to find OLED address:**
+- Run the I2C scanner below to confirm your display address
+- Default is `0x3C` — change to `0x3D` in the code if needed
+- Double-check SDA → D2 and SCL → D1
 
 ```cpp
+// I2C Scanner — upload this to find your OLED address
 #include <Wire.h>
 void setup() {
   Serial.begin(115200);
@@ -255,7 +157,7 @@ void loop() {
   for (byte i = 8; i < 120; i++) {
     Wire.beginTransmission(i);
     if (Wire.endTransmission() == 0) {
-      Serial.print("Found address: 0x");
+      Serial.print("Found: 0x");
       Serial.println(i, HEX);
     }
   }
@@ -263,94 +165,59 @@ void loop() {
 }
 ```
 
+### Clock shows "No WiFi!"
+- ESP8266 only supports **2.4 GHz** — not 5 GHz bands
+- `ssid` and `password` are case-sensitive
+- Open **Serial Monitor at 115200 baud** to see connection status
+
+### Clock shows "Syncing time..." and stays there
+- WiFi is connected but NTP hasn't responded yet — wait up to 10 seconds
+- The code retries automatically every 5 seconds
+- Make sure your router allows outbound UDP on port 123
+
 ### Touch sensor not responding
-
-```
-1. Verify SIGNAL → D5
-2. Check VCC and GND on sensor
-3. Open Serial Monitor — each tap prints "Face changed to: X"
-4. Adjust threshold: change 800 to 600 in the pressDuration check
-```
-
-### WiFi won't connect
-
-```
-1. ESP8266 only supports 2.4 GHz — not 5 GHz
-2. ssid and password are case-sensitive
-3. Check Serial Monitor for dot progress while connecting
-4. Move Wemos closer to router during first test
-```
-
-### Clock shows wrong time
-
-```
-1. Confirm gmtOffset_sec matches your timezone (see table above)
-2. WiFi must be connected for NTP sync
-3. Wait up to 10 seconds after WiFi connects for time to sync
-```
+- Verify SIGNAL wire is on D5
+- Open Serial Monitor — mode changes print `Mode: X`
+- Try adjusting `LONG_PRESS_TIME` or `DOUBLE_TAP_DELAY` at the top of the file
 
 ### Upload fails
-
-```
-1. Install CH340 drivers:
-   https://sparks.gogo.co.nz/ch340.html
-
-2. Try a different USB cable (some are power-only)
-
-3. Hold FLASH button on Wemos while clicking Upload
-
-4. Lower upload speed: Tools → Upload Speed → 115200
-```
+- Install CH340 drivers: [sparks.gogo.co.nz/ch340.html](https://sparks.gogo.co.nz/ch340.html)
+- Try a different USB cable (some are power-only)
+- Lower upload speed: **Tools → Upload Speed → 115200**
+- Hold the FLASH button on the Wemos while clicking Upload
 
 ---
 
 ## 🔧 Customization
 
-### Change long-press threshold
-
+### Change sleep timeout
 ```cpp
-// In loop() — default is 800ms
-if (pressDuration > 800) {
+const unsigned long SLEEP_TIMEOUT = 60000UL; // 1 minute — change to taste
 ```
 
-### Change animation speed
-
+### Change tap timing
 ```cpp
-// Smaller number = faster animation
-float bounce = sin((elapsed / 300.0) * PI) * 3;
-//                          ↑ change this
+const unsigned long DOUBLE_TAP_DELAY = 350; // ms window for double-tap
+const unsigned long LONG_PRESS_TIME  = 600; // ms hold for long press
 ```
 
-### Add a new expression
-
+### Change weather refresh interval
 ```cpp
-// 1. Add to enum
-enum AnimationState { HAPPY, BLINKING, ..., MY_FACE };
-
-// 2. Write the function
-void drawMyFace() {
-  drawAnimeEye(28, 20, 0);
-  drawAnimeEye(100, 20, 0);
-  // your mouth / effects here
-}
-
-// 3. Add to switch in loop()
-case MY_FACE: drawMyFace(); break;
-
-// 4. Increase modulo from 7 to 8
-currentAnimation = (AnimationState)((currentAnimation + 1) % 8);
+bool needUpdate = (now - lastWeatherUpdate > 600000UL); // 600000 = 10 minutes
 ```
+
 ---
 
 ## 📦 Dependencies
 
-| Library              |              Link                                                                            |
-|----------------------|----------------------------------------------------------------------------------------------|
-| ESP8266 Arduino Core | [github.com/esp8266/Arduino](https://github.com/esp8266/Arduino)                             |
-| Adafruit SSD1306     | [github.com/adafruit/Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306)         |
+| Library | Link |
+|---------|------|
+| ESP8266 Arduino Core | [github.com/esp8266/Arduino](https://github.com/esp8266/Arduino) |
+| Adafruit SSD1306 | [github.com/adafruit/Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306) |
 | Adafruit GFX Library | [github.com/adafruit/Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library) |
+| ArduinoJson v6 | [arduinojson.org](https://arduinojson.org) |
 
----
+Weather data provided by [Open-Meteo](https://open-meteo.com) (free, no API key needed).
 
 ## 📜 License
 
@@ -367,4 +234,4 @@ Issues and pull requests are welcome.
 
 ---
 
-*Made with 💙 — inspired by ekik & emo bots*
+*Made with 💙 — inspired by elik & emo bots*
