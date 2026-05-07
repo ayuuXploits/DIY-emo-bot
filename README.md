@@ -19,7 +19,7 @@ An expressive desktop companion running on a **Wemos D1 Mini (ESP8266)** with a 
 **Double-tap** the sensor at any time to cycle to the next mode.
 
 After **1 minute** of no interaction, the bot yawns, drifts off to sleep, and shows the clock screen automatically. Any touch wakes it back up.
-
+ 
 ---
 
 ## 🛒 Hardware
