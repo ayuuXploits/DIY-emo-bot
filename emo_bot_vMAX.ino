@@ -11,11 +11,11 @@
 // ================= USER CONFIG =================
 const char* ssid      = "YOUR_WIFI_SSID";      // <── your WiFi name
 const char* password  = "YOUR_WIFI_PASSWORD";  // <── your WiFi password
-const char* PLACE_NAME = "New York City";       // City shown on weather screen
+const char* PLACE_NAME = "New Delhi";       // City shown on weather screen
 
-// Location for weather (default: New York City)
-#define LATITUDE   40.7128
-#define LONGITUDE -74.0060
+// Location for weather (default: New Delhi)
+#define LATITUDE   28.7041
+#define LONGITUDE  77.1025
 
 // Timezone: IST = UTC+5:30 = 19800 seconds
 #define TZ_OFFSET_SEC 19800
