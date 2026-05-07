@@ -8,7 +8,7 @@
 #include <Adafruit_SSD1306.h>
 #include <math.h>
 
-// ================= USER CONFIG =================
+// ================= USER CONFIG =============================
 const char* ssid      = "YOUR_WIFI_SSID";      // <── your WiFi name
 const char* password  = "YOUR_WIFI_PASSWORD";  // <── your WiFi password
 const char* PLACE_NAME = "New Delhi";       // City shown on weather screen
