@@ -90,7 +90,7 @@ void loop() {
     touchPressStart = millis();
   }
   
-  // Touch released (LOW to HIGH transition)
+  // Touch released (LOW to HIGH transition) 
   if (currentTouchState == HIGH && lastTouchState) {
     unsigned long pressDuration = millis() - touchPressStart;
     
