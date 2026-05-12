@@ -833,73 +833,90 @@ void showClock() {
 //  WEATHER
 // ================================================================
 void fetchWeather() {
-  WiFiClient client;
-  HTTPClient http;
-
-  String url = "http://api.open-meteo.com/v1/forecast?latitude=" +
-               String(LATITUDE,  4) +
-               "&longitude="    + String(LONGITUDE, 4) +
-               "&current_weather=true";
-
   Serial.println(F("Fetching weather..."));
   weatherFetchFailed = false;
 
-  if (http.begin(client, url)) {
-    int code = http.GET();
-    if (code == 200) {
-      JsonDocument doc;
-      DeserializationError err = deserializeJson(doc, http.getStream());
-      if (!err) {
-        outdoorTemp        = doc["current_weather"]["temperature"].as<float>();
-        weatherReady       = true;
-        weatherFetchFailed = false;
-        lastWeatherUpdate  = millis();
-        Serial.print(F("Weather OK: "));
-        Serial.print(outdoorTemp);
-        Serial.println(F(" C"));
-      } else {
-        weatherFetchFailed = true;
-        Serial.print(F("JSON parse error: "));
-        Serial.println(err.c_str());
-      }
+  WiFiClient client;
+  HTTPClient http;
+
+  // wttr.in plain-text: returns temperature as e.g. "+32°C" or "-5°C"
+  // Using lat/lon so it works anywhere without city name issues.
+  // &m forces metric (Celsius).
+  String url = "http://wttr.in/" +
+               String(LATITUDE, 4) + "," + String(LONGITUDE, 4) +
+               "?format=%t&m";
+
+  http.setTimeout(8000);  // FIXED: 8-second hard timeout prevents infinite hang
+
+  if (!http.begin(client, url)) {
+    weatherFetchFailed = true;
+    Serial.println(F("HTTP begin failed"));
+    return;
+  }
+
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+
+  int code = http.GET();
+  Serial.print(F("HTTP code: ")); Serial.println(code);
+
+  if (code == 200) {
+    String payload = http.getString();  // FIXED: buffer fully before parsing
+    http.end();
+    payload.trim();
+    Serial.print(F("Payload: ")); Serial.println(payload);
+
+    // Strip leading '+' if present
+    if (payload.length() > 0 && payload[0] == '+') payload.remove(0, 1);
+
+    // Find where the number ends — stop at '°' (multi-byte) or 'C' or end
+    int cutAt = payload.length();
+    for (int i = 0; i < (int)payload.length(); i++) {
+      byte c = (byte)payload[i];
+      // '°' is 0xC2 0xB0 in UTF-8; 'C' terminates too
+      if (c > 127 || c == 'C') { cutAt = i; break; }
+    }
+    String numStr = payload.substring(0, cutAt);
+    numStr.trim();
+    Serial.print(F("Temp string: ")); Serial.println(numStr);
+
+    float parsed = numStr.toFloat();
+    // Sanity check: valid temp range -50..65°C, and string wasn't empty
+    if (numStr.length() > 0 && parsed > -50.0f && parsed < 65.0f) {
+      outdoorTemp        = parsed;
+      weatherReady       = true;
+      weatherFetchFailed = false;
+      lastWeatherUpdate  = millis();
+      Serial.print(F("Weather OK: ")); Serial.print(outdoorTemp); Serial.println(F("C"));
     } else {
       weatherFetchFailed = true;
-      Serial.print(F("Weather HTTP error: "));
-      Serial.println(code);
+      Serial.print(F("Bad payload: ")); Serial.println(payload);
     }
-    http.end();
   } else {
+    http.end();
     weatherFetchFailed = true;
-    Serial.println(F("Weather HTTP begin failed"));
+    Serial.print(F("HTTP error: ")); Serial.println(code);
   }
 }
 
-// FIX: showWeather() now shows the correct status instead of always
-// printing "Waiting for WiFi..." even when WiFi is connected
+// FIXED: showWeather() now shows the right message for each state
 void showWeather() {
   if (!weatherReady) {
     if (WiFi.status() != WL_CONNECTED) {
-      // Genuinely no WiFi
-      centerText("No WiFi!", 10, 1);
-      centerText("Check SSID &", 24, 1);
-      centerText("password", 36, 1);
-      centerText("in code", 48, 1);
+      centerText("No WiFi!",    10, 1);
+      centerText("Check SSID", 24, 1);
+      centerText("& password", 36, 1);
+      centerText("in code",    48, 1);
     } else if (weatherFetchFailed) {
-      // WiFi is up but the HTTP request failed
-      centerText("Fetch failed", 16, 1);
-      centerText("Retrying...", 28, 1);
-      // Show animated dots so the user knows it's alive
-      int d = (millis() / 500) % 4;
-      char buf[5] = "    ";
-      for (int i = 0; i < d; i++) buf[i] = '.';
-      centerText(buf, 42, 1);
+      centerText("Fetch failed",  16, 1);
+      centerText("Retrying...",   30, 1);
+      int d = (millis()/500) % 4;
+      char buf[5] = "    "; for (int i=0; i<d; i++) buf[i] = '.';
+      centerText(buf, 44, 1);
     } else {
-      // WiFi is up, fetch is in progress (first attempt not done yet)
-      centerText("Getting", 16, 1);
-      centerText("weather", 28, 1);
-      int d = (millis() / 500) % 4;
-      char buf[5] = "    ";
-      for (int i = 0; i < d; i++) buf[i] = '.';
+      centerText("Getting",  16, 1);
+      centerText("weather",  28, 1);
+      int d = (millis()/500) % 4;
+      char buf[5] = "    "; for (int i=0; i<d; i++) buf[i] = '.';
       centerText(buf, 42, 1);
     }
     return;
