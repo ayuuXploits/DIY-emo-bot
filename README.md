@@ -218,7 +218,7 @@ bool needUpdate = (now - lastWeatherUpdate > 600000UL); // 600000 = 10 minutes
 | Adafruit GFX Library | [github.com/adafruit/Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library) |
 | ArduinoJson v6 | [arduinojson.org](https://arduinojson.org) |
 
-Weather data provided by [Open-Meteo](https://open-meteo.com) (free, no API key needed).
+Weather data provided by [wttr](https://wttr.in) (free, no API key needed).
 ## preview
 ```
 ┌────────────────────────┐
