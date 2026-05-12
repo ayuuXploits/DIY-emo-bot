@@ -218,6 +218,8 @@ bool needUpdate = (now - lastWeatherUpdate > 600000UL); // 600000 = 10 minutes
 | ArduinoJson v6 | [arduinojson.org](https://arduinojson.org) |
 
 Weather data provided by [Open-Meteo](https://open-meteo.com) (free, no API key needed).
+## preview
+```
 ┌────────────────────────┐
 │   ╭────╮    ╭────╮     │  ← Alive mode: eyes looking right
 │   │  ◉ │    │ ◉  │     │
@@ -225,6 +227,7 @@ Weather data provided by [Open-Meteo](https://open-meteo.com) (free, no API key 
 │         ╭──╮           │
 │         ╰──╯           │  ← Happy mouth
 └────────────────────────┘
+```
 
 ## 📜 License
 
