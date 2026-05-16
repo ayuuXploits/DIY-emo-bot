@@ -122,6 +122,7 @@ CPU Frequency → 80 MHz
 Flash Size    → 4M (3M SPIFFS)
 Upload Speed  → 921600
 Port          → COM3 (Windows) / /dev/ttyUSB0 (Linux) / /dev/cu.usbserial-XXXX (macOS)
+
 ```
 
 ### 6 — Upload
@@ -196,6 +197,7 @@ void loop() {
 ### Change sleep timeout
 ```cpp
 const unsigned long SLEEP_TIMEOUT = 60000UL; // 1 minute — change to taste
+
 ```
 
 ### Change tap timing
