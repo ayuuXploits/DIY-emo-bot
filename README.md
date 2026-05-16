@@ -224,6 +224,7 @@ bool needUpdate = (now - lastWeatherUpdate > 600000UL); // 600000 = 10 minutes
 
 Weather data provided by [wttr](https://wttr.in) (free, no API key needed).
 ## preview
+
 ```
 ┌────────────────────────┐
 │   ╭────╮    ╭────╮     │  ← Alive mode: eyes looking right
