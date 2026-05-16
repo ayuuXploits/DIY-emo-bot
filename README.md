@@ -81,6 +81,7 @@ cd DIY_emo_bot.git
 To pull the latest changes later (if the repo gets updated):
 bashgit pull origin main
 Then open emo_bot_vMAX.ino in Arduino IDE.
+
 ```
 
 ### 4 — Configure the Code
