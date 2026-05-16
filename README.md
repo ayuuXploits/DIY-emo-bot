@@ -11,7 +11,7 @@ An expressive desktop companion running on a **Wemos D1 Mini (ESP8266)** with a 
 | 0 | 😊 **Alive** — blinking, looking around, yawning | Puppy squint | Pet the bot (big smile) |
 | 1 | 💕 **Love** — beating heart eyes | — | — |
 | 2 | 😠 **Angry** — furrowed eyes + fire | Recoil/reject | Full furious shake |
-| 3 | 😢 **Sad** — crying tears | — | Comfort (stops tears) |
+| 3 | 😢 **Sad** — crying & tears | — | Comfort (stops tears) |
 | 4 | 😵 **Dizzy** — spiral eyes + wavy mouth | — | — |
 | 5 | 🕐 **Clock** — live NTP time display | — | — |
 | 6 | 🌤️ **Weather** — temp + animated clouds | — | — |
