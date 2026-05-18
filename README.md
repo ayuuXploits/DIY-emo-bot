@@ -46,7 +46,7 @@
 
 ## 🔌 Wiring Diagram
 
-
+```
 Wemos D1 Mini
       │
       ├─── 3V3 ──┬──── VCC (OLED)
@@ -59,7 +59,7 @@ Wemos D1 Mini
       ├─── D1 (GPIO5) ──── SCL (OLED)
       └─── D5 (GPIO14) ─── SIGNAL (Touch)
 
-
+```
 | Pin | GPIO | Connected To |
 |-----|------|--------------|
 | `D1` | GPIO5 | OLED SCL |
