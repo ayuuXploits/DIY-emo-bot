@@ -50,10 +50,10 @@
 Wemos D1 Mini
       │
       ├─── 3V3 ──┬──── VCC (OLED)
-      │           └──── VCC (Touch)
+      │          └──── VCC (Touch)
       │
       ├─── GND ──┬──── GND (OLED)
-      │           └──── GND (Touch)
+      │          └──── GND (Touch)
       │
       ├─── D2 (GPIO4) ──── SDA (OLED)
       ├─── D1 (GPIO5) ──── SCL (OLED)
