@@ -289,9 +289,3 @@ If you built one, drop a **⭐ star** on the repo — it means a lot!
 Issues and pull requests are welcome.
 
 ---
-
-<div align="center">
-
-*Made with 💙 — inspired by elik & emo bots*
-
-</div>
