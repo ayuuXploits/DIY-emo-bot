@@ -11,23 +11,6 @@
 [![NTP](https://img.shields.io/badge/Clock-NTP_Synced-brightgreen?style=for-the-badge)](https://en.wikipedia.org/wiki/Network_Time_Protocol)
 [![Weather](https://img.shields.io/badge/Weather-wttr.in_(no_API_key)-orange?style=for-the-badge)](https://wttr.in)
 
-<br/>
-
-*Animated emotions · Live NTP clock · Real-time weather · Floppy Bird — all on a 128×64 OLED, no cloud required.*
-
-<br/>
-
-```
-  ┌─────────────────────────────┐
-  │    ╭──────╮    ╭──────╮     │  ← Alive mode: eyes looking right
-  │    │  ◉   │    │   ◉  │     │
-  │    ╰──────╯    ╰──────╯     │
-  │           ╭────╮            │
-  │           ╰────╯            │  ← Happy mouth
-  └─────────────────────────────┘
-```
-
-</div>
 
 ---
 
