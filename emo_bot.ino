@@ -1,14 +1,3 @@
-/*
- * ANIME CUTE FACE BOT - Full Screen Expressions
- * Features: HUGE anime eyes, NO face outline, touch-controlled
- * Style: Like ekik/mochi bots with expressive eyes
- * 
- * Pinout:
- * OLED SDA -> D2 (GPIO4)
- * OLED SCL -> D1 (GPIO5)
- * Touch Sensor SIGNAL -> D5 (GPIO14)
- */
-
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
