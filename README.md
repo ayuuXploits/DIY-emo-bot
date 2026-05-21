@@ -104,7 +104,7 @@ Go to **Sketch → Include Library → Manage Libraries** and install:
 
 ### Step 4 — Clone the Repository
 
-```bash
+``` bash
 git clone https://github.com/ayuuXploits/DIY_emo_bot.git
 cd DIY_emo_bot
 ```
