@@ -136,6 +136,7 @@ const char* PLACE_NAME = "New York City";   // shown on weather screen
 
 // ── Timezone ─────────────────────────────────────────
 #define TZ_OFFSET_SEC  19800                // UTC+5:30 for IST (see table below)
+
 ```
 
 **Common timezone offsets:**
