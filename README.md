@@ -47,6 +47,7 @@
 ## 🔌 Wiring Diagram
 
 ```
+
 Wemos D1 Mini
       │
       ├─── 3V3 ──┬──── VCC (OLED)
