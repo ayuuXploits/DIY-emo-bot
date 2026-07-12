@@ -21,8 +21,8 @@
 #include <math.h>
 
 // ================= USER CONFIG =================
-const char* ssid       = "Airtel_Ayu_9080";
-const char* password   = "Sapi@1234";
+const char* ssid       = "Airtel_example_9080"; // write ur own wifi name
+const char* password   = "example@1234";//write ur own wifi pass
 const char* PLACE_NAME = "GAYA JI";
 
 #define LATITUDE      24.7914
