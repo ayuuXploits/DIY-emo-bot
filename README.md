@@ -207,6 +207,7 @@ Click **→ Upload** in Arduino IDE and watch the Serial Monitor at `115200` bau
 ## 🔧 Customization
 
 ```cpp
+
 // ── Sleep timeout (ms) ────────────────────────────────
 const unsigned long SLEEP_TIMEOUT = 60000UL;   // 1 minute
 
