@@ -231,6 +231,7 @@ bool needUpdate = (now - lastWeatherUpdate > 600000UL);
 Run the I2C scanner below to find your display address. Default is `0x3C` — change to `0x3D` in code if needed. Double-check `SDA → D2` and `SCL → D1`.
 
 ```cpp
+
 #include <Wire.h>
 void setup() {
   Serial.begin(115200);
