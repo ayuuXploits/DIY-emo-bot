@@ -75,6 +75,7 @@ Wemos D1 Mini
       ├─── D1 (GPIO5) ──── SCL (OLED)
       └─── D5 (GPIO14) ─── SIGNAL (Touch)
 
+
 ```
 | Pin | GPIO | Connected To |
 |-----|------|--------------|
