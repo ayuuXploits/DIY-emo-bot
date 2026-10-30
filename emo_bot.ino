@@ -187,7 +187,6 @@ void drawClockDisplay() {
   }
 }
 
-// ================== FACE DRAWING FUNCTIONS ==================
 
 void drawHappyFace() {
   // HUGE happy anime eyes
